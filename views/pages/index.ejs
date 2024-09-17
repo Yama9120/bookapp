@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+
+        <link href="https://calil.jp/public/css/calilapi.css" rel="stylesheet" type="text/css" />
+        
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://calil.jp/public/js/calilapi.js"></script>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+        <script src="https://calil.jp/public/js/calilapi.js"></script>
+
+        <%- include('../partials/head'); %>
+    </head>
+     
+    <body class="container">
+ 
+    <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
+        <%- include('../partials/header'); %>
+    </header>
+ 
+    <main style="margin-top: 70px;">
+        <%- include('../partials/body'); %>
+
+        <%- include('../partials/search'); %>
+
+        <%- include('../partials/line'); %>
+
+        <%- include('../partials/func_buttons'); %>
+
+        <%- include('../partials/line'); %>
+
+    </main>  
+ 
+    <footer>
+       <%- include('../partials/footer'); %>
+    </footer>
+ 
+
+    <script src="/scripts/calil-api.js"></script>
+    <script src="/scripts/search.js"></script>
+    </body>
+</html>
