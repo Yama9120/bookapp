@@ -1,4 +1,4 @@
-<!-- 図書検索フォーム -->
+<!-- 図書館検索フォーム -->
 <form id="library-search-form">
     <label for="pref">都道府県:</label>
     <input type="text" id="pref" name="pref" required>
@@ -6,8 +6,24 @@
     <label for="city">市町村:</label>
     <input type="text" id="city" name="city" required>
     
-    <button type="submit">図書館を検索</button>
+    <button type="submit">図書館検索</button>
 </form>
 
 <!-- 図書館の検索結果表示 -->
 <div id="search-results"></div>
+
+
+
+<!-- 蔵書検索フォーム -->
+<form id="book-search-form">
+    <label for="systemid">システムID:</label>
+    <input type="text" id="systemid" name="systemid" required>
+    
+    <label for="isbn">ISBN:</label>
+    <input type="text" id="isbn" name="isbn" required>
+    
+    <button type="submit">蔵書を検索</button>
+</form>
+
+<!-- 蔵書の検索結果表示 -->
+<div id="book-search-results"></div>

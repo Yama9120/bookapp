@@ -53,20 +53,28 @@ app.get('/searchLibrary', async (req, res) => {
 // 書籍検索API
 app.get('/searchBook', async (req, res) => {
   const { isbn, systemid } = req.query;
-  const apiKey = '9e1e59710bd49874aad19bd9f4b00b41';
+
+  if (!isbn || !systemid) {
+      return res.status(400).send('ISBNと図書館のsystemidを指定してください');
+  }
+
+  // callback=noを追加してJSON形式で応答を取得
+  const checkUrl = `https://api.calil.jp/check?appkey=${API_KEY}&isbn=${encodeURIComponent(isbn)}&systemid=${encodeURIComponent(systemid)}&format=json&callback=no`;
 
   try {
-      const response = await axios.get('https://api.calil.jp/check', {
-          params: {
-              appkey: apiKey,
-              isbn: isbn,
-              systemid: systemid,
-              format: 'json'
-          }
-      });
-      res.json(response.data);
+      const response = await fetch(checkUrl);
+      if (!response.ok) {
+          throw new Error(`HTTPエラー! ステータスコード: ${response.status}`);
+      }
+      const data = await response.json();
+
+      // デバック
+      console.log('Received Book Data:', JSON.stringify(data, null, 2));
+
+      res.json(data);
   } catch (error) {
-      res.status(500).json({ error: '書籍情報の取得に失敗しました' });
+      console.error('APIリクエストエラー:', error);
+      res.status(500).send('蔵書データの取得に失敗しました');
   }
 });
 
