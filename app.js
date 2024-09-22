@@ -1,9 +1,11 @@
+require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 
 const app = express();
 
-const API_KEY = '9e1e59710bd49874aad19bd9f4b00b41'; // 実際のAPIキーを入力
+const API_KEY = process.env.API_KEY; // 実際のAPIキーを入力
 
 // ビューエンジンをejsにセットする
 app.set('view engine', 'ejs');
