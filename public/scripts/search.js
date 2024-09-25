@@ -1,3 +1,7 @@
+// 図書館のコードのようなもの
+let systemIds = [];
+let librariesData = [];
+
 document.getElementById('library-search-form').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -26,26 +30,46 @@ document.getElementById('library-search-form').addEventListener('submit', functi
 function displayLibraries(data) {
     const resultsDiv = document.getElementById('search-results');
     resultsDiv.innerHTML = '';
+    librariesData = data; // 図書館データを保存
 
     if (data && data.length > 0) {
-        data.forEach(library => {
-            const libraryDiv = document.createElement('div');
-            libraryDiv.textContent = `図書館名: ${library.formal}, 住所: ${library.address}`;
-            resultsDiv.appendChild(libraryDiv);
+        const selectElement = document.createElement('select');
+        selectElement.id = 'library-select';
 
-            // systemidを保存
-            currentSystemId = library.systemid; // 最後の図書館のsystemidを保存（必要に応じて修正）
+        data.forEach((library, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = `${library.formal} (${library.systemid})`;
+            selectElement.appendChild(option);
         });
+
+        resultsDiv.appendChild(selectElement);
+
+        // 図書館リストを表示
+        // data.forEach(library => {
+        //     const libraryDiv = document.createElement('div');
+        //     libraryDiv.textContent = `図書館名: ${library.formal}, 住所: ${library.address}, Libkey: ${library.libkey}`;
+        //     resultsDiv.appendChild(libraryDiv);
+        // });
     } else {
         resultsDiv.textContent = '該当する図書館が見つかりませんでした。';
     }
 }
 
 document.getElementById('book-search-form').addEventListener('submit', function(event) {
-    event.preventDefault(); // デフォルトの送信を防ぐ
+    event.preventDefault();
 
-    const systemid = document.getElementById('systemid').value; // システムIDをフォームから取得
-    const isbn = document.getElementById('isbn').value; // ISBNをフォームから取得
+    const selectElement = document.getElementById('library-select');
+    const selectedIndex = selectElement.selectedIndex;
+    const selectedLibrary = librariesData[selectedIndex];
+
+    if (!selectedLibrary) {
+        document.getElementById('book-search-results').textContent = '選択された図書館が見つかりません。';
+        return;
+    }
+
+    const systemid = selectedLibrary.systemid;
+    const isbn = document.getElementById('isbn').value;
 
     const url = `/searchBook?isbn=${encodeURIComponent(isbn)}&systemid=${encodeURIComponent(systemid)}`;
 
@@ -57,8 +81,8 @@ document.getElementById('book-search-form').addEventListener('submit', function(
             return response.json();
         })
         .then(data => {
-            console.log('APIレスポンス:', data); // ここでレスポンスを確認
-            displayBookResults(data);
+            console.log('APIレスポンス:', data);
+            displayBookResults(data, selectedLibrary);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -66,49 +90,46 @@ document.getElementById('book-search-form').addEventListener('submit', function(
         });
 });
 
-function displayBookResults(data) {
+function displayBookResults(data, selectedLibrary) {
     const resultsDiv = document.getElementById('book-search-results');
     resultsDiv.innerHTML = '';
 
-    // booksがオブジェクトであることを確認
     if (data.books && typeof data.books === 'object') {
         for (const isbn in data.books) {
             if (data.books.hasOwnProperty(isbn)) {
                 const bookInfo = data.books[isbn];
                 
-                // ISBNを表示
                 const bookDiv = document.createElement('div');
                 bookDiv.textContent = `ISBN: ${isbn}`;
                 resultsDiv.appendChild(bookDiv);
                 
-                // 図書館ごとの状態を表示
-                for (const library in bookInfo) {
-                    if (bookInfo.hasOwnProperty(library)) {
-                        const statusInfo = bookInfo[library];
-
-                        // 各図書館の状態を表示
-                        const statusDiv = document.createElement('div');
-                        statusDiv.textContent = `${library}: ${statusInfo.status}`; // 状態を表示
-                        resultsDiv.appendChild(statusDiv);
-
-                        // 各図書館の貸出状況を表示
+                for (const libraryName in bookInfo) {
+                    if (bookInfo.hasOwnProperty(libraryName)) {
+                        const statusInfo = bookInfo[libraryName];
                         const libraryStatuses = statusInfo.libkey;
-                        for (const lib in libraryStatuses) {
-                            if (libraryStatuses.hasOwnProperty(lib)) {
-                                const status = libraryStatuses[lib]; // 貸出状況を取得
-                                const libStatusDiv = document.createElement('div');
-                                libStatusDiv.textContent = `${lib}: ${status}`; // 図書館名と貸出状況を表示
-                                resultsDiv.appendChild(libStatusDiv);
-                            }
-                        }
+                        
+                        console.log("libraryStatuses")
+                        console.log(libraryStatuses)
 
-                        // 予約リンクを追加
-                        if (statusInfo.reserveurl) {
-                            const reserveLink = document.createElement('a');
-                            reserveLink.href = statusInfo.reserveurl;
-                            reserveLink.textContent = '予約リンク';
-                            reserveLink.target = '_blank';
-                            resultsDiv.appendChild(reserveLink);
+                        // 選択された図書館のlibkeyと一致するかチェック
+                        // libkeyのないとこ（県立、市立等のみに存在してそう）はエラーになるので修正
+                        // リクエストに時間がかかるとエラーになる。二回とか押すと通る。公式documentに2度目の呼び出し（ポーリング）について記載。待つように修正。
+                        if (libraryStatuses.hasOwnProperty(selectedLibrary.libkey)) {
+                            const statusDiv = document.createElement('div');
+                            statusDiv.textContent = `${libraryName}: ${statusInfo.status}`;
+                            resultsDiv.appendChild(statusDiv);
+
+                            const libStatusDiv = document.createElement('div');
+                            libStatusDiv.textContent = `${selectedLibrary.libkey}: ${libraryStatuses[selectedLibrary.libkey]}`;
+                            resultsDiv.appendChild(libStatusDiv);
+
+                            if (statusInfo.reserveurl) {
+                                const reserveLink = document.createElement('a');
+                                reserveLink.href = statusInfo.reserveurl;
+                                reserveLink.textContent = '予約リンク';
+                                reserveLink.target = '_blank';
+                                resultsDiv.appendChild(reserveLink);
+                            }
                         }
                     }
                 }
@@ -116,5 +137,9 @@ function displayBookResults(data) {
         }
     } else {
         resultsDiv.textContent = '該当する蔵書が見つかりませんでした。';
+    }
+
+    if (resultsDiv.children.length === 1 && resultsDiv.children[0].textContent.startsWith('ISBN:')) {
+        resultsDiv.appendChild(document.createElement('div')).textContent = '選択された図書館の蔵書データはありません。';
     }
 }
