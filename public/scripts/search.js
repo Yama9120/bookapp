@@ -2,6 +2,9 @@
 let systemIds = [];
 let librariesData = [];
 
+
+
+// 図書館検索
 document.getElementById('library-search-form').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -56,6 +59,9 @@ function displayLibraries(data) {
     }
 }
 
+
+
+// 叢書検索
 document.getElementById('book-search-form').addEventListener('submit', function(event) {
     event.preventDefault();
 
@@ -71,7 +77,17 @@ document.getElementById('book-search-form').addEventListener('submit', function(
     const systemid = selectedLibrary.systemid;
     const isbn = document.getElementById('isbn').value;
 
-    const url = `/searchBook?isbn=${encodeURIComponent(isbn)}&systemid=${encodeURIComponent(systemid)}`;
+    // 検索中の表示
+    document.getElementById('book-search-results').textContent = '検索中...';
+
+    searchBook(isbn, systemid, selectedLibrary);
+});
+
+function searchBook(isbn, systemid, selectedLibrary, session = null) {
+    let url = `/searchBook?isbn=${encodeURIComponent(isbn)}&systemid=${encodeURIComponent(systemid)}`;
+    if (session) {
+        url += `&session=${encodeURIComponent(session)}`;
+    }
 
     fetch(url)
         .then(response => {
@@ -82,39 +98,48 @@ document.getElementById('book-search-form').addEventListener('submit', function(
         })
         .then(data => {
             console.log('APIレスポンス:', data);
-            displayBookResults(data, selectedLibrary);
+            if (data.continue === 1) {
+                // 2秒後に再度リクエストを送信
+                setTimeout(() => {
+                    searchBook(isbn, systemid, selectedLibrary, data.session);
+                }, 2000);
+            } else {
+                displayBookResults(data, selectedLibrary);
+            }
         })
         .catch(error => {
             console.error('Error:', error);
             document.getElementById('book-search-results').textContent = `蔵書データの取得に失敗しました: ${error.message}`;
         });
-});
+}
 
 function displayBookResults(data, selectedLibrary) {
     const resultsDiv = document.getElementById('book-search-results');
     resultsDiv.innerHTML = '';
 
     if (data.books && typeof data.books === 'object') {
+        let foundMatchingLibrary = false;
+
         for (const isbn in data.books) {
             if (data.books.hasOwnProperty(isbn)) {
                 const bookInfo = data.books[isbn];
                 
-                const bookDiv = document.createElement('div');
-                bookDiv.textContent = `ISBN: ${isbn}`;
-                resultsDiv.appendChild(bookDiv);
+                let bookDisplayed = false;
                 
                 for (const libraryName in bookInfo) {
                     if (bookInfo.hasOwnProperty(libraryName)) {
                         const statusInfo = bookInfo[libraryName];
-                        const libraryStatuses = statusInfo.libkey;
+                        const libraryStatuses = statusInfo.libkey || {};
                         
-                        console.log("libraryStatuses")
-                        console.log(libraryStatuses)
-
                         // 選択された図書館のlibkeyと一致するかチェック
-                        // libkeyのないとこ（県立、市立等のみに存在してそう）はエラーになるので修正
-                        // リクエストに時間がかかるとエラーになる。二回とか押すと通る。公式documentに2度目の呼び出し（ポーリング）について記載。待つように修正。
                         if (libraryStatuses.hasOwnProperty(selectedLibrary.libkey)) {
+                            if (!bookDisplayed) {
+                                const bookDiv = document.createElement('div');
+                                bookDiv.textContent = `ISBN: ${isbn}`;
+                                resultsDiv.appendChild(bookDiv);
+                                bookDisplayed = true;
+                            }
+
                             const statusDiv = document.createElement('div');
                             statusDiv.textContent = `${libraryName}: ${statusInfo.status}`;
                             resultsDiv.appendChild(statusDiv);
@@ -130,16 +155,18 @@ function displayBookResults(data, selectedLibrary) {
                                 reserveLink.target = '_blank';
                                 resultsDiv.appendChild(reserveLink);
                             }
+
+                            foundMatchingLibrary = true;
                         }
                     }
                 }
             }
         }
+
+        if (!foundMatchingLibrary) {
+            resultsDiv.textContent = '選択された図書館に該当する蔵書が見つかりませんでした。';
+        }
     } else {
         resultsDiv.textContent = '該当する蔵書が見つかりませんでした。';
-    }
-
-    if (resultsDiv.children.length === 1 && resultsDiv.children[0].textContent.startsWith('ISBN:')) {
-        resultsDiv.appendChild(document.createElement('div')).textContent = '選択された図書館の蔵書データはありません。';
     }
 }
