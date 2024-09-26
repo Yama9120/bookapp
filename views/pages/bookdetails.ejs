@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+
+        <link rel="stylesheet" href="/styles/main.css">
+        
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://calil.jp/public/js/calilapi.js"></script>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+        <script src="https://calil.jp/public/js/calilapi.js"></script>
+
+        <%- include('../partials/head'); %>
+    </head>
+     
+    <body class="container", style="padding-top: 70px;">
+
+        <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
+            <%- include('../partials/header'); %>
+        </header>
+
+        <h1>Book Details</h1>
+        <div id="book-details"></div>
+    
+        <script>
+            const bookId = '<%= bookId %>';
+            const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
+    
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const volumeInfo = data.volumeInfo;
+                    document.getElementById('book-details').innerHTML = `
+                        <h2>${volumeInfo.title}</h2>
+                        <p>著者: ${volumeInfo.authors ? volumeInfo.authors.join(', ') : '著者不明'}</p>
+                        <img src="${volumeInfo.imageLinks.thumbnail}" alt="${volumeInfo.title}の表紙">
+                        <p>${volumeInfo.description}</p>
+                    `;
+                })
+                .catch(error => console.error('Error fetching book details:', error));
+        </script>
+
+        <footer>
+            <%- include('../partials/footer'); %>
+        </footer>
+
+    </body>
+    
+</html>
