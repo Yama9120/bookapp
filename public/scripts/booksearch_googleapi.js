@@ -8,6 +8,9 @@ $(document).ready(function() {
 
 function searchBooks(query) {
     const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10`;
+    
+    // 検索中のメッセージを表示
+    $('#results').html('<p>検索中...</p>');
 
     $.ajax({
         url: apiUrl,
@@ -26,7 +29,7 @@ function searchBooks(query) {
 
 function displayResults(books) {
     const resultsDiv = $('#results');
-    resultsDiv.empty();
+    resultsDiv.empty();  // 「検索中...」のメッセージをクリア
 
     if (books && books.length > 0) {
         books.forEach(function(book) {
@@ -47,7 +50,7 @@ function displayResults(books) {
                         <p>著者: ${authors}</p>
                     </a>
                 </div>
-            `;        
+            `;
 
             resultsDiv.append(bookHtml);
         });
