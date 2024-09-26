@@ -17,33 +17,37 @@
         <%- include('../partials/head'); %>
     </head>
      
-    <body class="container">
- 
-    <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
-        <%- include('../partials/header'); %>
-    </header>
- 
-    <main style="margin-top: 70px;">
-        <%- include('../partials/body'); %>
+    <body style="padding-top: 70px;">
 
-        <%- include('../partials/searchlibrary'); %>
+        <div class="container"> 
+ 
+            <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
+                <%- include('../partials/header'); %>
+            </header>
         
-        <%- include('../partials/booksearch_googleapi'); %>     
+            <main style="margin-top: 70px;">
+                <%- include('../partials/body'); %>
 
-        <%- include('../partials/line'); %>
+                <%- include('../partials/searchlibrary'); %>
+                
+                <%- include('../partials/booksearch_googleapi'); %>     
 
-        <%- include('../partials/func_buttons'); %>
+                <%- include('../partials/line'); %>
 
-        <%- include('../partials/line'); %>
+                <%- include('../partials/func_buttons'); %>
 
-    </main>  
- 
-    <footer>
-       <%- include('../partials/footer'); %>
-    </footer>
- 
+                <%- include('../partials/line'); %>
 
-    <script src="/scripts/searchlibrary.js"></script>
+            </main>  
+    
+        </div>
+
+        <footer class="mt-4 w-100">
+            <%- include('../partials/footer'); %>
+        </footer>
+            
+
+        <script src="/scripts/searchlibrary.js"></script>
     
     </body>
 </html>

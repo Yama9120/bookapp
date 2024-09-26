@@ -37,8 +37,9 @@ footer {
     padding: 10px;
     background-color: #333;
     color: #fff;
-    width: 100%; /* 幅を100%に設定 */
-    position: relative; /* 親要素の流れに従う */
-    bottom: 0; /* 下に固定 */
-    margin-top: auto; /* 残りのスペースを取る */
+    width: 100%; /* 横いっぱいに表示 */
+    position: relative;
+    bottom: 0;
+    left: 0; /* 左側の位置を指定 */
+    right: 0; /* 右側の位置を指定 */
 }
