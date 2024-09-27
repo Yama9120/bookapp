@@ -18,39 +18,56 @@
     </head>
      
     <body style="padding-top: 70px;">
-
         <div class="container"> 
-
             <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
-                <%- include('../partials/header'); %>
+                <%- include('../partials/header') %>
             </header>
-
+    
             <h1>Book Details</h1>
             <div id="book-details"></div>
+            <div id="searchlibrary-container" style="display: none;">
+                <%- include('../partials/searchlibrary') %>
+            </div>
+            <div id="book-description"></div>
         
             <script>
                 const bookId = '<%= bookId %>';
                 const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
         
-                fetch(apiUrl)
-                    .then(response => response.json())
-                    .then(data => {
+                async function loadBookDetails() {
+                    try {
+                        const response = await fetch(apiUrl);
+                        const data = await response.json();
                         const volumeInfo = data.volumeInfo;
+    
+                        // 本の詳細を表示
                         document.getElementById('book-details').innerHTML = `
                             <h2>${volumeInfo.title}</h2>
                             <p>著者: ${volumeInfo.authors ? volumeInfo.authors.join(', ') : '著者不明'}</p>
                             <img src="${volumeInfo.imageLinks.thumbnail}" alt="${volumeInfo.title}の表紙">
-                            <p>${volumeInfo.description}</p>
                         `;
-                    })
-                    .catch(error => console.error('Error fetching book details:', error));
+    
+                        // searchlibrary.ejsを表示
+                        document.getElementById('searchlibrary-container').style.display = 'block';
+    
+                        // 説明文を処理して表示
+                        const description = volumeInfo.description || '説明文がありません。';
+                        const processedDescription = description.replace(/\n/g, '<br>');
+                        document.getElementById('book-description').innerHTML = `<p>${processedDescription}</p>`;
+                    } catch (error) {
+                        console.error('Error fetching book details:', error);
+                    }
+                }
+    
+                loadBookDetails();
             </script>
-
         </div>
-
+    
         <footer class="mt-4 w-100">
-            <%- include('../partials/footer'); %>
+            <%- include('../partials/footer') %>
         </footer>
+
+        <script src="/scripts/searchlibrary.js"></script>
 
     </body>
     
