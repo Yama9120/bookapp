@@ -18,6 +18,15 @@ app.get('/', (req, res) => {
   res.render('pages/index');
 });
 
+
+// 本の詳細ページルート
+app.get('/book/:id', (req, res) => {
+  const bookId = req.params.id;
+  // ここでAPIを使って本の詳細情報を取得することができます。
+  res.render('pages/bookdetails', { bookId }); // bookdetails.ejs への変更
+});
+
+
 app.get('/searchLibrary', async (req, res) => {
   const { pref, city } = req.query;
 
