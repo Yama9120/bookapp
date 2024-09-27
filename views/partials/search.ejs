@@ -1,10 +1,15 @@
 <!-- 図書館検索フォーム -->
 <form id="library-search-form">
     <label for="pref">都道府県:</label>
-    <input type="text" id="pref" name="pref" required>
+    <select id="pref">
+        <option value="">都道府県を選択してください</option>
+    </select>
     
     <label for="city">市町村:</label>
-    <input type="text" id="city" name="city" required>
+    <!-- <input type="text" id="city" name="city" required> -->
+    <select id="city">
+        <option value="">市町村を選択してください</option>
+    </select>
     
     <button type="submit">図書館検索</button>
 </form>

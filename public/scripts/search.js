@@ -2,6 +2,45 @@
 let systemIds = [];
 let librariesData = [];
 
+// 都道府県と市区町村のデータ
+let prefecturesData = {};
+
+const prefSelect = document.getElementById('pref');
+const citySelect = document.getElementById('city');
+
+// JSONファイルを読み込む
+fetch('../pref_and_city.json')
+.then(response => response.json())
+.then(data => {
+    prefecturesData = data;
+    populatePrefectures();
+})
+.catch(error => console.error('Error loading the JSON file:', error));
+
+// 都道府県のオプションを追加
+function populatePrefectures() {
+    Object.keys(prefecturesData).forEach(pref => {
+        const option = document.createElement('option');
+        option.value = pref;
+        option.textContent = pref;
+        prefSelect.appendChild(option);
+    });
+}
+
+// 都道府県選択時に市町村を更新
+prefSelect.addEventListener('change', function() {
+    const selectedPref = this.value;
+    citySelect.innerHTML = '<option value="">市町村を選択してください</option>';
+    
+    if (selectedPref) {
+        prefecturesData[selectedPref].forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            citySelect.appendChild(option);
+        });
+    }
+});
 
 
 // 図書館検索
