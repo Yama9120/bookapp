@@ -8,16 +8,21 @@ let prefecturesData = {};
 const prefSelect = document.getElementById('pref');
 const citySelect = document.getElementById('city');
 
+// デフォルト値の設定
+const DEFAULT_PREFECTURE = "広島県";
+const DEFAULT_CITY = "東広島市";
+
 // JSONファイルを読み込む
 fetch('../pref_and_city.json')
 .then(response => response.json())
 .then(data => {
     prefecturesData = data;
     populatePrefectures();
+    setDefaultValues();
 })
 .catch(error => console.error('Error loading the JSON file:', error));
 
-// 都道府県のオプションを追加
+// 都道府県の選択
 function populatePrefectures() {
     Object.keys(prefecturesData).forEach(pref => {
         const option = document.createElement('option');
@@ -27,19 +32,36 @@ function populatePrefectures() {
     });
 }
 
-// 都道府県選択時に市町村を更新
-prefSelect.addEventListener('change', function() {
-    const selectedPref = this.value;
-    citySelect.innerHTML = '<option value="">市町村を選択してください</option>';
+// 市区町村の選択
+function populateCities(prefecture) {
+    citySelect.innerHTML = '<option value="">市区町村を選択してください</option>';
     
-    if (selectedPref) {
-        prefecturesData[selectedPref].forEach(city => {
+    if (prefecture && prefecturesData[prefecture]) {
+        prefecturesData[prefecture].forEach(city => {
             const option = document.createElement('option');
             option.value = city;
             option.textContent = city;
             citySelect.appendChild(option);
         });
     }
+}
+
+// デフォルト値を選択
+function setDefaultValues() {
+    if (prefecturesData[DEFAULT_PREFECTURE]) {
+        prefSelect.value = DEFAULT_PREFECTURE;
+        populateCities(DEFAULT_PREFECTURE);
+        
+        if (prefecturesData[DEFAULT_PREFECTURE].includes(DEFAULT_CITY)) {
+            citySelect.value = DEFAULT_CITY;
+        }
+    }
+}
+
+// 都道府県選択時に市町村を更新
+prefSelect.addEventListener('change', function() {
+    const selectedPref = this.value;
+    populateCities(selectedPref);
 });
 
 
