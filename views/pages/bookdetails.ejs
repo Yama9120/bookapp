@@ -20,34 +20,38 @@
     <body style="padding-top: 70px;">
 
         <div class="container"> 
- 
+
             <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
                 <%- include('../partials/header'); %>
             </header>
+
+            <h1>Book Details</h1>
+            <div id="book-details"></div>
         
-            <main style="margin-top: 70px;">
-                <%- include('../partials/body'); %>
+            <script>
+                const bookId = '<%= bookId %>';
+                const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
+        
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        const volumeInfo = data.volumeInfo;
+                        document.getElementById('book-details').innerHTML = `
+                            <h2>${volumeInfo.title}</h2>
+                            <p>著者: ${volumeInfo.authors ? volumeInfo.authors.join(', ') : '著者不明'}</p>
+                            <img src="${volumeInfo.imageLinks.thumbnail}" alt="${volumeInfo.title}の表紙">
+                            <p>${volumeInfo.description}</p>
+                        `;
+                    })
+                    .catch(error => console.error('Error fetching book details:', error));
+            </script>
 
-                <%- include('../partials/searchlibrary'); %>
-                
-                <%- include('../partials/booksearch_googleapi'); %>     
-
-                <%- include('../partials/line'); %>
-
-                <%- include('../partials/func_buttons'); %>
-
-                <%- include('../partials/line'); %>
-
-            </main>  
-    
         </div>
 
         <footer class="mt-4 w-100">
             <%- include('../partials/footer'); %>
         </footer>
-            
 
-        <script src="/scripts/searchlibrary.js"></script>
-    
     </body>
+    
 </html>
