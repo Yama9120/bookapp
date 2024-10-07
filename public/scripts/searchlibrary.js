@@ -72,7 +72,7 @@ document.getElementById('library-search-form').addEventListener('submit', functi
     const pref = document.getElementById('pref').value;
     const city = document.getElementById('city').value;
 
-    const url = `/searchLibrary?pref=${encodeURIComponent(pref)}&city=${encodeURIComponent(city)}`;
+    const url = `/searchLibrary?geocode=${encodeURIComponent(globalLongitude)},${encodeURIComponent(globalLatitude)}`;
 
     fetch(url)
         .then(response => {

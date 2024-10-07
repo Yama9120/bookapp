@@ -2,10 +2,12 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
+const { fetch } = require('undici');
 
 const app = express();
 
-const API_KEY = process.env.API_KEY; // 実際のAPIキーを入力
+const API_KEY = process.env.API_KEY;
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 // ビューエンジンをejsにセットする
 app.set('view engine', 'ejs');
@@ -90,8 +92,29 @@ app.get('/searchBook', async (req, res) => {
 });
 
 
+// 経度緯度取得api
+app.get('/geocode', async (req, res) => {
+  const keyword = req.query.keyword;
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(keyword)}&key=${apiKey}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data.results && data.results.length > 0) {
+      const location = data.results[0].geometry.location;
+      res.json({ geocode: `${location.lng},${location.lat}` });
+    } else {
+      res.status(404).json({ error: 'Geocoding failed' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 // サーバーを起動
-const PORT = 8082;
+const PORT = process.env.PORT || 8082;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
