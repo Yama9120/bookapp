@@ -90,8 +90,7 @@ app.get('/searchBook', async (req, res) => {
 // 経度緯度取得api
 app.get('/geocode', async (req, res) => {
   const keyword = req.query.keyword;
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(keyword)}&key=${apiKey}`;
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(keyword)}&key=${GOOGLE_MAPS_API_KEY}`;
 
   try {
     const response = await fetch(url);

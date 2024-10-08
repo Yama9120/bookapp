@@ -9,21 +9,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const keyword = keywordInput.value;
 
             if (keyword) {
-                // Submitボタンを無効にする
-                const submitButton = form.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-
                 getGeocode(keyword)
-                    .then(geocode => {
-                        displayResult(geocode);
-                        const [longitude, latitude] = geocode.split(',');
-                        return searchLibrary(longitude, latitude); // searchLibraryをPromiseチェーンの中で呼び出す
-                    })
-                    .catch(displayError)
-                    .finally(() => {
-                        // 最後にSubmitボタンを再度有効にする
-                        submitButton.disabled = false;
-                    });
+                    .then(displayResult)
+                    .then(({ longitude, latitude }) => searchLibrary(longitude, latitude))  // 緯度・経度を使って図書館検索
+                    .catch(displayError);
             } else {
                 displayError('キーワードを入力してください。');
             }
@@ -42,27 +31,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.error) {
                     throw new Error(data.error);
                 }
-                return data.geocode; // geocodeを返す
+                return data.geocode;
             });
     }
 
     function displayResult(geocode) {
         const [longitude, latitude] = geocode.split(',');
 
-        // グローバル変数にセット
-        globalLatitude = latitude;
-        globalLongitude = longitude;
+        // 結果を表示しない
+        // resultDiv.innerHTML = `
+        //     <h3>検索結果</h3>
+        //     <p>緯度,経度</p>
+        //     <p>${latitude},${longitude}</p>
+        // `;
 
-        // 結果を表示
-        resultDiv.innerHTML = `
-            <h3>検索結果</h3>
-            <p>緯度,経度</p>
-            <p>${latitude},${longitude}</p>
-        `;
+        return { longitude, latitude }; // 緯度・経度をオブジェクトとして返す
     }
 
     function searchLibrary(longitude, latitude) {
-        // 緯度・経度を使ってAPIリクエストを送る
         const geocode = `${longitude},${latitude}`;
         return fetch(`/searchLibrary?geocode=${encodeURIComponent(geocode)}`)
             .then(response => {
@@ -73,8 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 console.log('Library Search Results:', data);
-                // 図書館データの表示処理を追加
-                displayLibraryResults(data);
+                displayLibraryResults(data); // 図書館データの表示処理を追加
             })
             .catch(error => {
                 console.error('Library search failed:', error);
@@ -83,6 +68,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayLibraryResults(libraries) {
+        // 結果をクリア
+        resultDiv.innerHTML = '';
+
         const libraryResultDiv = document.createElement('div');
         libraryResultDiv.innerHTML = `<h3>近くの図書館</h3>`;
         libraries.forEach(library => {
