@@ -14,5 +14,12 @@
     "express": "^4.21.0",
     "node-fetch": "^3.3.2",
     "undici": "^6.19.8"
+  },
+  "devDependencies": {
+    "html-loader": "^5.1.0",
+    "html-webpack-plugin": "^5.6.0",
+    "template-ejs-loader": "^0.9.4",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
   }
 }
