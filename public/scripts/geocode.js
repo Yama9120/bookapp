@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
         libraries.forEach(library => {
             const libraryDiv = document.createElement('div');
             libraryDiv.innerHTML = `
-                <p>名前: ${library.libkey}</p>
+                <p>名前: ${library.formal}</p>
                 <p>住所: ${library.address}</p>
             `;
             libraryResultDiv.appendChild(libraryDiv);
