@@ -12,7 +12,7 @@ module.exports = function() {
       /**
        * OUTPUT_DIRECTORY = /dist
        */
-      path: path.resolve(__dirname, "dist"),
+      path: path.resolve(__dirname, ""),
     },
 
     module: {
