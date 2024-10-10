@@ -20,6 +20,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # ここで dist/images ディレクトリを作成するステップを追加
+      - name: Create dist/images directory if it does not exist
+        run: mkdir -p dist/images
+
       - name: Build
         run: npm run build
 

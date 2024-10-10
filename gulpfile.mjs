@@ -4,6 +4,26 @@ import rename from 'gulp-rename';
 import uglify from 'gulp-uglify';
 import cleanCSS from 'gulp-clean-css';
 import imagemin from 'gulp-imagemin';
+import mkdirp from 'mkdirp';
+
+// dist/images ディレクトリが存在しない場合は作成する
+gulp.task('create-images-dir', function (done) {
+  mkdirp('dist/images', function (err) {
+    if (err) {
+      console.error(err);
+      done(err);  // エラーがあれば報告
+    } else {
+      done();  // 成功時
+    }
+  });
+});
+
+// ejsのタスクの前に create-images-dir を実行する
+gulp.task('ejs', gulp.series('create-images-dir', function () {
+  return gulp.src('src/ejs/**/*.ejs')
+    .pipe(ejs())
+    .pipe(gulp.dest('dist'));
+}));
 
 // EJSファイルをHTMLに変換
 gulp.task('ejs', function() {
@@ -31,10 +51,13 @@ gulp.task('styles', function() {
 });
 
 // 画像の最適化
-gulp.task('images', function() {
-  return gulp.src('public/images/*')
-    .pipe(imagemin())
-    .pipe(gulp.dest('dist/images'));
+gulp.task('images', function (done) {
+  return gulp.src('public/images/**/*')
+    .pipe(gulp.dest('dist/images'))
+    .on('error', function (err) {
+      console.log("No images found, skipping task.");
+      done();
+    });
 });
 
 // その他のファイルのコピー
