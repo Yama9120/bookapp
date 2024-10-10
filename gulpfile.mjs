@@ -4,7 +4,7 @@ import rename from 'gulp-rename';
 import uglify from 'gulp-uglify';
 import cleanCSS from 'gulp-clean-css';
 import imagemin from 'gulp-imagemin';
-import mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 
 // dist/images ディレクトリが存在しない場合は作成する
 gulp.task('create-images-dir', function (done) {
