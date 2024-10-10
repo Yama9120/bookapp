@@ -1,15 +1,42 @@
+// デバウンス関数の実装
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// 検索関数をデバウンスで包む
+const debouncedSearch = debounce(function(query) {
+    if (query.length > 2) { // 最小3文字以上で検索
+        searchBooks(query);
+    }
+}, 300); // 300ミリ秒のデバウンス時間
+
+// 入力フィールドのイベントリスナーを設定
 $(document).ready(function() {
+    $('#search-input').on('input', function() {
+        const query = $(this).val();
+        debouncedSearch(query);
+    });
+
     $('#search-form').submit(function(e) {
         e.preventDefault();
         const query = $('#search-input').val();
-        searchBooks(query);
+        if (query.length > 2) {
+            searchBooks(query);
+        }
     });
 });
 
 function searchBooks(query) {
     const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10`;
     
-    // 検索中のメッセージを表示
     $('#results').html('<p>検索中...</p>');
 
     $.ajax({
@@ -18,11 +45,15 @@ function searchBooks(query) {
         dataType: 'json',
         success: function(data) {
             displayResults(data.items);
-            console.log(data.items); // APIリクエスト確認
+            console.log(data.items);
         },
-        error: function(error) {
-            console.error('Error fetching books:', error);
-            $('#results').html('<p>エラーが発生しました。もう一度お試しください。</p>');
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error fetching books:', errorThrown);
+            if (jqXHR.status === 429) {
+                $('#results').html('<p>リクエストが多すぎます。しばらく待ってから再試行してください。</p>');
+            } else {
+                $('#results').html('<p>エラーが発生しました。もう一度お試しください。</p>');
+            }
         }
     });
 }

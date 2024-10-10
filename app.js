@@ -2,10 +2,12 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
+const { fetch } = require('undici');
 
 const app = express();
 
-const API_KEY = process.env.API_KEY; // 実際のAPIキーを入力
+const API_KEY = process.env.API_KEY;
+const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 // ビューエンジンをejsにセットする
 app.set('view engine', 'ejs');
@@ -28,14 +30,18 @@ app.get('/book/:id', (req, res) => {
 
 
 app.get('/searchLibrary', async (req, res) => {
-  const { pref, city } = req.query;
+  const { geocode } = req.query;
 
-  if (!pref || !city) {
-      return res.status(400).send('都道府県と市区町村を指定してください');
+  if (!geocode) {
+    return res.status(400).send('緯度と経度を指定してください');
   }
 
-  // JSON形式でレスポンスを取得するためにcallbackパラメータに空白を指定
-  const url = `https://api.calil.jp/library?appkey=${API_KEY}&pref=${encodeURIComponent(pref)}&city=${encodeURIComponent(city)}&format=json&callback=`;
+  const [longitude, latitude] = geocode.split(',');
+  if (!longitude || !latitude) {
+    return res.status(400).send('緯度と経度が不正です');
+  }
+
+  const url = `https://api.calil.jp/library?appkey=${API_KEY}&geocode=${encodeURIComponent(longitude)},${encodeURIComponent(latitude)}&format=json&callback=&limit=10`;
 
   try {
     const response = await fetch(url);
@@ -43,22 +49,13 @@ app.get('/searchLibrary', async (req, res) => {
       throw new Error(`HTTPエラー! ステータスコード: ${response.status}`);
     }
     const text = await response.text(); // テキストとしてレスポンスを取得
-    console.log('Response Text:', text); // レスポンスのテキストを確認
-    try {
-      // JSON形式でない場合に備え、XMLなども対応する場合は別の解析処理を追加する
-      const data = JSON.parse(text); // JSONとしてレスポンスを解析
-      console.log('Library Data:', data);
-      res.json(data); // クライアントにデータを送信
-    } catch (error) {
-      console.error('レスポンスの解析に失敗しました:', error);
-      res.status(500).send('レスポンスの解析に失敗しました');
-    }
+    const data = JSON.parse(text); // JSONとしてレスポンスを解析
+    res.json(data); // クライアントにデータを返す
   } catch (error) {
     console.error('APIリクエストエラー:', error);
-    res.status(500).send('図書館データの取得に失敗しました: HTTPエラー!');
+    res.status(500).send('図書館データの取得に失敗しました');
   }
 });
-
 
 
 // 書籍検索API
@@ -90,8 +87,28 @@ app.get('/searchBook', async (req, res) => {
 });
 
 
+// 経度緯度取得api
+app.get('/geocode', async (req, res) => {
+  const keyword = req.query.keyword;
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(keyword)}&key=${GOOGLE_MAPS_API_KEY}`;
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    if (data.results && data.results.length > 0) {
+      const location = data.results[0].geometry.location;
+      res.json({ geocode: `${location.lng},${location.lat}` });
+    } else {
+      res.status(404).json({ error: 'Geocoding failed' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
 // サーバーを起動
-const PORT = 8082;
+const PORT = process.env.PORT || 8082;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
