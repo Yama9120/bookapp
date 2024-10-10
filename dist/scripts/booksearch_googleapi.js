@@ -1,0 +1,9 @@
+function debounce(o,t){let n;return function(...e){clearTimeout(n),n=setTimeout(()=>{clearTimeout(n),o(...e)},t)}}let debouncedSearch=debounce(function(e){2<e.length&&searchBooks(e)},300);function searchBooks(e){e=`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(e)}&maxResults=10`;$("#results").html("<p>検索中...</p>"),$.ajax({url:e,method:"GET",dataType:"json",success:function(e){displayResults(e.items),console.log(e.items)},error:function(e,o,t){console.error("Error fetching books:",t),429===e.status?$("#results").html("<p>リクエストが多すぎます。しばらく待ってから再試行してください。</p>"):$("#results").html("<p>エラーが発生しました。もう一度お試しください。</p>")}})}function displayResults(e){let s=$("#results");s.empty(),e&&0<e.length?e.forEach(function(e){var o=e.volumeInfo,t=o.title,n=o.authors?o.authors.join(", "):"著者不明",o=o.imageLinks?o.imageLinks.thumbnail:"",e=(encodeURIComponent(JSON.stringify({id:e.id,title:t,authors:n,thumbnail:o})),`
+                <div class="book-item">
+                    <a href="/book/${e.id}">
+                        ${o?`<img src="${o}" alt="${t}の表紙">`:""}
+                        <h2>${t}</h2>
+                        <p>著者: ${n}</p>
+                    </a>
+                </div>
+            `);s.append(e)}):s.html("<p>検索結果が見つかりませんでした。</p>")}function saveBookData(e){localStorage.setItem("selectedBook",e),console.log("保存されたデータ:",localStorage.getItem("selectedBook")),window.location.href="/book?id="+JSON.parse(decodeURIComponent(e)).id}$(document).ready(function(){$("#search-input").on("input",function(){var e=$(this).val();debouncedSearch(e)}),$("#search-form").submit(function(e){e.preventDefault();e=$("#search-input").val();2<e.length&&searchBooks(e)})});

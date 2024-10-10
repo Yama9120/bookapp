@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+
+        <link rel="stylesheet" href="/styles/main.css">
+        
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://calil.jp/public/js/calilapi.js"></script>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+        <script src="https://calil.jp/public/js/calilapi.js"></script>
+
+        <meta charset="UTF-8">
+<title>Web App with EJS + Express</title>
+ 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+   body { padding-top:50px; }
+</style>
+    </head>
+     
+    <body style="padding-top: 70px;">
+        <div class="container"> 
+            <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
+                <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <a class="navbar-brand" href="/">Home</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/about">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/services">Services</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/portfolio">Portfolio</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/contact">Contact</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+            </header>
+    
+            <h1>Book Details</h1>
+            <div id="book-details"></div>
+            <div id="searchlibrary-container" style="display: none;">
+                <!-- 図書館検索フォーム -->
+<form id="library-search-form">
+    <label for="pref">都道府県:</label>
+    <select id="pref">
+        <option value="">都道府県を選択してください</option>
+    </select>
+    
+    <label for="city">市区町村:</label>
+    <select id="city">
+        <option value="">市区町村を選択してください</option>
+    </select>
+    
+    <button type="submit">図書館検索</button>
+</form>
+
+<!-- 図書館の検索結果表示 -->
+<div id="search-results"></div>
+
+
+
+<!-- 蔵書検索フォーム -->
+<form id="book-search-form">
+    
+    <label for="isbn">ISBN:</label>
+    <input type="text" id="isbn" name="isbn" required>
+    
+    <button type="submit">蔵書を検索</button>
+</form>
+
+<!-- 蔵書の検索結果表示 -->
+<div id="book-search-results"></div>
+
+            </div>
+            <div id="book-description"></div>
+        
+            <script>
+                const bookId = 'placeholder';
+                const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
+        
+                async function loadBookDetails() {
+                    try {
+                        const response = await fetch(apiUrl);
+                        const data = await response.json();
+                        const volumeInfo = data.volumeInfo;
+    
+                        // 本の詳細を表示
+                        document.getElementById('book-details').innerHTML = `
+                            <h2>${volumeInfo.title}</h2>
+                            <p>著者: ${volumeInfo.authors ? volumeInfo.authors.join(', ') : '著者不明'}</p>
+                            <img src="${volumeInfo.imageLinks.thumbnail}" alt="${volumeInfo.title}の表紙">
+                        `;
+    
+                        // searchlibrary.ejsを表示
+                        document.getElementById('searchlibrary-container').style.display = 'block';
+    
+                        // 説明文を処理して表示
+                        const description = volumeInfo.description || '説明文がありません。';
+                        const processedDescription = description.replace(/\n/g, '<br>');
+                        document.getElementById('book-description').innerHTML = `<p>${processedDescription}</p>`;
+                    } catch (error) {
+                        console.error('Error fetching book details:', error);
+                    }
+                }
+    
+                loadBookDetails();
+            </script>
+        </div>
+    
+        <footer class="mt-4 w-100">
+            <div class="container-fluid bg-dark text-white py-1">
+    <div class="container">
+        <p class="mb-0">© Copyright 2024 Ryuki</p>
+    </div>
+</div>
+        </footer>
+
+        <script src="/scripts/searchlibrary.js"></script>
+
+    </body>
+    
+</html>
