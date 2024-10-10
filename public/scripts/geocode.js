@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (keyword) {
                 getGeocode(keyword)
                     .then(displayResult)
-                    .then(({ longitude, latitude }) => searchLibrary(longitude, latitude))  // 緯度・経度を使って図書館検索
+                    .then(geocode => searchLibrary(geocode))  // geocodeをそのまま渡す
                     .catch(displayError);
             } else {
                 displayError('キーワードを入力してください。');
@@ -28,29 +28,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
+                console.log('APIからのレスポンス:', data);
                 if (data.error) {
                     throw new Error(data.error);
                 }
-                return data.geocode;
+                return data.geocode; // geocodeをそのまま返す
             });
     }
 
     function displayResult(geocode) {
-        const [longitude, latitude] = geocode.split(',');
-
-        // 結果を表示しない
-        // resultDiv.innerHTML = `
-        //     <h3>検索結果</h3>
-        //     <p>緯度,経度</p>
-        //     <p>${latitude},${longitude}</p>
-        // `;
-
-        return { longitude, latitude }; // 緯度・経度をオブジェクトとして返す
+        console.log('取得したgeocode:', geocode); // 追加: 取得したgeocodeを確認
+        return geocode; // geocodeをそのまま返す
     }
 
-    function searchLibrary(longitude, latitude) {
-        const geocode = `${longitude},${latitude}`;
-        return fetch(`/searchLibrary?geocode=${encodeURIComponent(geocode)}`)
+    function searchLibrary(geocode) {
+        // ここではgeocodeをそのまま使う
+        const encodedGeocode = encodeURIComponent(geocode);
+        return fetch(`/searchLibrary?geocode=${encodedGeocode}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('図書館データの取得に失敗しました');
@@ -59,14 +53,14 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 console.log('Library Search Results:', data);
-                displayLibraryResults(data); // 図書館データの表示処理を追加
+                displayLibraryResults(data);
             })
             .catch(error => {
                 console.error('Library search failed:', error);
                 displayError('図書館データの取得に失敗しました');
             });
     }
-
+    
     function displayLibraryResults(libraries) {
         // 結果をクリア
         resultDiv.innerHTML = '';

@@ -89,7 +89,8 @@ app.get('/searchBook', async (req, res) => {
 
 // 経度緯度取得api
 app.get('/geocode', async (req, res) => {
-  const keyword = req.query.keyword;
+  const { keyword } = req.query;
+  console.log('Received keyword:', keyword); // 追加: キーワードを確認
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(keyword)}&key=${GOOGLE_MAPS_API_KEY}`;
 
   try {
