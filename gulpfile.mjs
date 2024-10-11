@@ -82,5 +82,10 @@ gulp.task('watch', function() {
   gulp.watch('public/images/*', gulp.series('images'));
 });
 
+gulp.task('nojekyll', function(cb) {
+  return gulp.src('src/.nojekyll')
+    .pipe(gulp.dest('dist'));
+});
+
 // デフォルトタスク
-gulp.task('default', gulp.series('build', 'watch'));
+gulp.task('build', gulp.series('ejs', 'scripts', 'styles', 'images', 'copy', 'nojekyll'));
