@@ -3,9 +3,8 @@
     <head>
         <meta charset="UTF-8">
 
-        <!-- ここを修正 -->
-        <link rel="stylesheet" href="dist/style/main.css">
-
+        <link rel="stylesheet" href="/styles/main.css">
+        
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
@@ -16,119 +15,128 @@
         <script src="https://calil.jp/public/js/calilapi.js"></script>
 
         <meta charset="UTF-8">
-        <title>Web App with EJS + Express</title>
+<title>Web App with EJS + Express</title>
  
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
-        <style>
-            body { padding-top:50px; }
-        </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css">
+<style>
+   body { padding-top:50px; }
+</style>
     </head>
      
     <body style="padding-top: 70px;">
 
         <div class="container"> 
+ 
             <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
                 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-                    <a class="navbar-brand" href="/">Home</a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
+  <a class="navbar-brand" href="/">Home</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
   
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item">
-                                <a class="nav-link" href="/about">About</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/services">Services</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/portfolio">Portfolio</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/contact">Contact</a>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="/about">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/services">Services</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/portfolio">Portfolio</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/contact">Contact</a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
             </header>
         
             <main style="margin-top: 70px;">
                 <div class="jumbotron">
-                    <div class="bg-image" style="background-color: #2e8b57; /* 薄暗い緑 */
-                        min-height: 50vh; height: auto;">
+    <div class="bg-image" style="background-color: #2e8b57; /* 薄暗い緑 */
+    min-height: 50vh; height: auto;">
     
-                        <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 50vh; height: auto;">
-                            <h1 style="color:white; text-align: center;">図書館 & 蔵書検索</h1>   
-                        </div>
-                    </div>
+    <div class="container" style="display: flex; justify-content: center; align-items: center; min-height: 50vh; height: auto;">
+      <h1 style="color:white; text-align: center;">図書館 & 蔵書検索</h1>   
+   </div>
+</div>
 
-                    <!-- 図書館検索フォーム -->
-                    <form id="library-search-form">
-                        <label for="pref">都道府県:</label>
-                        <select id="pref">
-                            <option value="">都道府県を選択してください</option>
-                        </select>
+
+                <!-- 図書館検索フォーム -->
+<form id="library-search-form">
+    <label for="pref">都道府県:</label>
+    <select id="pref">
+        <option value="">都道府県を選択してください</option>
+    </select>
     
-                        <label for="city">市区町村:</label>
-                        <select id="city">
-                            <option value="">市区町村を選択してください</option>
-                        </select>
+    <label for="city">市区町村:</label>
+    <select id="city">
+        <option value="">市区町村を選択してください</option>
+    </select>
     
-                        <button type="submit">図書館検索</button>
-                    </form>
+    <button type="submit">図書館検索</button>
+</form>
 
-                    <!-- 図書館の検索結果表示 -->
-                    <div id="search-results"></div>
+<!-- 図書館の検索結果表示 -->
+<div id="search-results"></div>
 
-                    <!-- 蔵書検索フォーム -->
-                    <form id="book-search-form">
-                        <label for="isbn">ISBN:</label>
-                        <input type="text" id="isbn" name="isbn" required>
-                        <button type="submit">蔵書を検索</button>
-                    </form>
 
-                    <!-- 蔵書の検索結果表示 -->
-                    <div id="book-search-results"></div>
 
-                    <!-- 本検索フォーム（google books api） -->
-                    <form id="search-form">
-                        <label for="pref">本の検索:</label>
-                        <input type="text" id="search-input" placeholder="キーワードを入力">
-                        <button type="submit">検索</button>
-                    </form>
-                    <div id="results"></div>
+<!-- 蔵書検索フォーム -->
+<form id="book-search-form">
+    
+    <label for="isbn">ISBN:</label>
+    <input type="text" id="isbn" name="isbn" required>
+    
+    <button type="submit">蔵書を検索</button>
+</form>
 
-                    <!-- JavaScriptファイルのパスを修正 -->
-                    <script src="scripts/booksearch_googleapi.js"></script>     
+<!-- 蔵書の検索結果表示 -->
+<div id="book-search-results"></div>
 
-                    <div class="divider" style="border-top: 1px solid #ccc; margin: 20px 0;"></div>
+                
+                <!-- 本検索フォーム（google books api） -->
+<form id="search-form">
+    <label for="pref">本の検索:</label>
+    <input type="text" id="search-input" placeholder="キーワードを入力">
+    <button type="submit">検索</button>
+</form>
+<div id="results"></div>
 
-                    <div class="geocode-form-container"></div>
-                    <h2>キーワードから緯度経度を取得し、図書館を検索</h2>
-                    <form id="geocode-form">
-                        <input type="text" id="keyword-input" placeholder="キーワードを入力" required>
-                        <button type="submit">検索</button>
-                    </form>
-                    <div id="geocode-result"></div>
-                </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/scripts/booksearch_googleapi.js"></script>     
 
                 <div class="divider" style="border-top: 1px solid #ccc; margin: 20px 0;"></div>
+
+                <div class="geocode-form-container"></div>
+    <h2>キーワードから緯度経度を取得し、図書館を検索</h2>
+    <form id="geocode-form">
+        <input type="text" id="keyword-input" placeholder="キーワードを入力" required>
+        <button type="submit">検索</button>
+    </form>
+    <div id="geocode-result"></div>
+</div>
+
+                <div class="divider" style="border-top: 1px solid #ccc; margin: 20px 0;"></div>
+
             </main>  
     
         </div>
 
         <footer class="mt-4 w-100">
             <div class="container-fluid bg-dark text-white py-1">
-                <div class="container">
-                    <p class="mb-0">© Copyright 2024 Ryuki</p>
-                </div>
-            </div>
+    <div class="container">
+        <p class="mb-0">© Copyright 2024 Ryuki</p>
+    </div>
+</div>
         </footer>
             
-        <script src="dist/scripts/booksearch_googleapi.js"></script>
-        <script src="dist/scripts/searchlibrary.js"></script>
-        <script src="dist/scripts/geocode.js"></script>
+
+        <script src="/scripts/searchlibrary.js"></script>
+        <script src="/scripts/geocode.js"></script>
     
     </body>
 </html>
