@@ -6,9 +6,10 @@ import cleanCSS from 'gulp-clean-css';
 import { mkdirp } from 'mkdirp';
 import file from 'gulp-file';
 import replace from 'gulp-replace';
+import gulpIf from 'gulp-if';
 
 // GitHub PagesのベースURL
-const baseUrl = '/bookapp/';
+const baseUrl = 'bookapp/';
 
 // dist/images ディレクトリが存在しない場合は作成する
 gulp.task('create-images-dir', async function () {
@@ -29,8 +30,9 @@ gulp.task('ejs', function() {
       bookId: 'placeholder'
     }, {}, { ext: '.html' }))
     .pipe(rename({ extname: '.html' }))
-    .pipe(replace(/href="\//g, `href="${baseUrl}`))
-    .pipe(replace(/src="\//g, `src="${baseUrl}`))
+    // ベースURLが設定されている場合のみ、置換を行う
+    .pipe(gulpIf(!!baseUrl, replace(/href="(\/|\.\/)/g, `href="${baseUrl}`)))
+    .pipe(gulpIf(!!baseUrl, replace(/src="(\/|\.\/)/g, `src="${baseUrl}`)))
     .pipe(gulp.dest('dist'));
 });
 
