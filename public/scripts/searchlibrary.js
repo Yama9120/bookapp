@@ -12,15 +12,15 @@ const citySelect = document.getElementById('city');
 const DEFAULT_PREFECTURE = "広島県";
 const DEFAULT_CITY = "東広島市";
 
-// JSONファイルを読み込む
-fetch('../pref_and_city.json')
-.then(response => response.json())
-.then(data => {
-    prefecturesData = data;
-    populatePrefectures();
-    setDefaultValues();
-})
-.catch(error => console.error('Error loading the JSON file:', error));
+// // JSONファイルを読み込む
+// fetch('../pref_and_city.json')
+// .then(response => response.json())
+// .then(data => {
+//     prefecturesData = data;
+//     populatePrefectures();
+//     setDefaultValues();
+// })
+// .catch(error => console.error('Error loading the JSON file:', error));
 
 // 都道府県の選択
 function populatePrefectures() {
@@ -68,9 +68,6 @@ prefSelect.addEventListener('change', function() {
 // 図書館検索
 document.getElementById('library-search-form').addEventListener('submit', function(event) {
     event.preventDefault();
-
-    const pref = document.getElementById('pref').value;
-    const city = document.getElementById('city').value;
 
     const url = `/searchLibrary?geocode=${encodeURIComponent(globalLongitude)},${encodeURIComponent(globalLatitude)}`;
 
