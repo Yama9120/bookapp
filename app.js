@@ -10,12 +10,8 @@ const API_KEY = process.env.API_KEY;
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 // 環境変数に基づいて baseUrl を設定する
-// const isProduction = process.env.NODE_ENV === 'production';
-// const baseUrl = isProduction ? '/bookapp/' : '/';
-// 環境変数からbaseUrlを取得
-const baseUrl = process.env.BASE_URL || ''; // 環境変数がなければ空文字を使用
-app.locals.baseUrl = baseUrl; // EJSで使用できるようにセット
-
+const isProduction = process.env.NODE_ENV === 'production';
+const baseUrl = isProduction ? '/bookapp/' : '/';
 
 // ビューエンジンをejsにセットする
 app.set('view engine', 'ejs');

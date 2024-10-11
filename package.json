@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-   
-    "build": "cross-env BASE_URL='/bookapp/' npx gulp build",
+    "build": "gulp build",
     "start": "node app.js",
     "start:prod": "set NODE_ENV=production && node app.js"
   },

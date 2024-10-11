@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('geocode-form');
     const keywordInput = document.getElementById('keyword-input');
     const resultDiv = document.getElementById('geocode-result');
-    const baseUrl = "<%= baseUrl %>";
 
     if (form) {
         form.addEventListener('submit', function(event) {
@@ -21,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function getGeocode(keyword) {
-        return fetch(`${baseUrl}geocode?keyword=${encodeURIComponent(keyword)}`)
+        return fetch(`/geocode?keyword=${encodeURIComponent(keyword)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('ネットワークレスポンスが正常ではありません');
@@ -45,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function searchLibrary(geocode) {
         // ここではgeocodeをそのまま使う
         const encodedGeocode = encodeURIComponent(geocode);
-        return fetch(`${baseUrl}searchLibrary?geocode=${encodedGeocode}`)
+        return fetch(`/searchLibrary?geocode=${encodedGeocode}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('図書館データの取得に失敗しました');
