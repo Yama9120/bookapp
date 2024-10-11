@@ -5,6 +5,7 @@ import uglify from 'gulp-uglify';
 import cleanCSS from 'gulp-clean-css';
 import imagemin from 'gulp-imagemin';
 import { mkdirp } from 'mkdirp';
+import file from 'gulp-file';
 
 // dist/images ディレクトリが存在しない場合は作成する
 gulp.task('create-images-dir', function (done) {
@@ -82,8 +83,8 @@ gulp.task('watch', function() {
   gulp.watch('public/images/*', gulp.series('images'));
 });
 
-gulp.task('nojekyll', function(cb) {
-  return gulp.src('src/.nojekyll')
+gulp.task('nojekyll', function() {
+  return file('.nojekyll', '', { src: true })
     .pipe(gulp.dest('dist'));
 });
 
