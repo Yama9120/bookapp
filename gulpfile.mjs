@@ -3,7 +3,6 @@ import ejs from 'gulp-ejs';
 import rename from 'gulp-rename';
 import uglify from 'gulp-uglify';
 import cleanCSS from 'gulp-clean-css';
-import imagemin from 'gulp-imagemin';
 import { mkdirp } from 'mkdirp';
 import file from 'gulp-file';
 
@@ -18,13 +17,6 @@ gulp.task('create-images-dir', function (done) {
     }
   });
 });
-
-// ejsのタスクの前に create-images-dir を実行する
-gulp.task('ejs', gulp.series('create-images-dir', function () {
-  return gulp.src('src/ejs/**/*.ejs')
-    .pipe(ejs())
-    .pipe(gulp.dest('dist'));
-}));
 
 // EJSファイルをHTMLに変換
 gulp.task('ejs', function() {
