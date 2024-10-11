@@ -6,7 +6,6 @@ import cleanCSS from 'gulp-clean-css';
 import { mkdirp } from 'mkdirp';
 import file from 'gulp-file';
 import replace from 'gulp-replace';
-import gulpIf from 'gulp-if';
 
 // GitHub PagesのベースURL
 const baseUrl = '/bookapp/';

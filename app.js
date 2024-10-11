@@ -9,6 +9,10 @@ const app = express();
 const API_KEY = process.env.API_KEY;
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
+// 環境変数に基づいて baseUrl を設定する
+const isProduction = process.env.NODE_ENV === 'production';
+const baseUrl = isProduction ? '/bookapp/' : '/';
+
 // ビューエンジンをejsにセットする
 app.set('view engine', 'ejs');
 
@@ -17,7 +21,7 @@ app.use(express.static('public'));
 
 // ルートページ
 app.get('/', (req, res) => {
-  res.render('pages/index');
+  res.render('pages/index', { baseUrl });
 });
 
 
@@ -25,7 +29,7 @@ app.get('/', (req, res) => {
 app.get('/book/:id', (req, res) => {
   const bookId = req.params.id;
   // ここでAPIを使って本の詳細情報を取得することができます。
-  res.render('pages/bookdetails', { bookId }); // bookdetails.ejs への変更
+  res.render('pages/bookdetails', { bookId, baseUrl }); // bookdetails.ejs への変更
 });
 
 
