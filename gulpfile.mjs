@@ -8,7 +8,7 @@ import file from 'gulp-file';
 import replace from 'gulp-replace';
 
 // GitHub PagesのベースURL
-const baseUrl = '/bookapp/';
+const baseUrl = process.env.BASE_URL || ''; // 環境変数がなければデフォルトの値を使用
 
 // dist/images ディレクトリが存在しない場合は作成する
 gulp.task('create-images-dir', async function () {
