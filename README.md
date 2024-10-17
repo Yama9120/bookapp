@@ -10,7 +10,7 @@ npm install
 
 - ローカルホスト
 
-http://localhost:8082/
+http://localhost:8080/
 
 
 
