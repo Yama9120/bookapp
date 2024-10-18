@@ -3,7 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const { fetch } = require('undici');
-const { XMLParser } = require('fast-xml-parser');
+const axios = require('axios');
+// const { XMLParser } = require('fast-xml-parser');
 
 const app = express();
 
@@ -28,10 +29,28 @@ app.get('/', (req, res) => {
 
 
 // 本の詳細ページルート
-app.get('/book/:id', (req, res) => {
-  const bookId = req.params.id;
-  // ここでAPIを使って本の詳細情報を取得することができます。
-  res.render('pages/bookdetails', { bookId, baseUrl }); // bookdetails.ejs への変更
+app.get('/bookdetails/:isbn', async (req, res) => {
+  const isbn = req.params.isbn;
+  const rakutenApiUrl = `https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404?format=json&isbn=${isbn}&applicationId=${process.env.RAKUTEN_APP_ID}`;
+
+  try {
+    // 楽天ブックスAPIからデータを取得
+    const response = await axios.get(rakutenApiUrl);
+    const bookData = response.data.Items[0].Item;
+
+    // itemCodeとその他のデータをEJSテンプレートに渡す
+    res.render('pages/bookdetails', {
+      itemCode: bookData.itemCode,
+      bookTitle: bookData.title,
+      author: bookData.author,
+      publisherName: bookData.publisherName,
+      largeImageUrl: bookData.largeImageUrl,
+      itemCaption: bookData.itemCaption
+    });
+  } catch (error) {
+    console.error('Error fetching data from Rakuten API:', error);
+    res.status(500).send('Error fetching book details from Rakuten API');
+  }
 });
 
 
@@ -102,6 +121,7 @@ app.get('/geocode', async (req, res) => {
   try {
     const response = await fetch(url);
     const data = await response.json();
+    console.log('Google Maps API response:', data);
     if (data.results && data.results.length > 0) {
       const location = data.results[0].geometry.location;
       res.json({ geocode: `${location.lng},${location.lat}` });
@@ -201,7 +221,7 @@ app.get('/searchBooks', async (req, res) => {
       return res.status(400).send('検索キーワードは3文字以上で入力してください');
   }
 
-  const apiUrl = `https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?format=json&keyword=${encodeURIComponent(query)}&applicationId=${RAKUTEN_APP_ID}&hits=10&genreId=001`;
+  const apiUrl = `https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?format=json&keyword=${encodeURIComponent(query)}&applicationId=${RAKUTEN_APP_ID}&hits=10`;
 
   try {
       const response = await fetch(apiUrl);

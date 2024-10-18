@@ -64,6 +64,7 @@ function displayResults(books) {
             const creator = Item.author || '著者不明';
             const publisher = Item.publisherName || '出版社不明';
             const thumbnailUrl = Item.largeImageUrl || ''; // 大きな画像URLを取得
+            const bookId = Item.isbn; // ISBNを本のIDとして使用
 
             const bookHtml = `
                 <div class="book-item">
@@ -71,6 +72,7 @@ function displayResults(books) {
                     <p class="book-creator">著者: ${creator}</p>
                     <p class="book-publisher">出版社: ${publisher}</p>
                     ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="表紙画像" class="book-thumbnail">` : ''}
+                    <a href="/bookdetails/${bookId}" class="btn btn-primary mt-2">詳細を見る</a>
                 </div>
             `;
             resultsDiv.append(bookHtml);
