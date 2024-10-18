@@ -9,7 +9,7 @@ const app = express();
 
 const API_KEY = process.env.API_KEY;
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
-// const RAKUTEN_APP_ID = process.env.RAKUTEN_APP_ID;
+const RAKUTEN_APP_ID = process.env.RAKUTEN_APP_ID;
 
 // 環境変数に基づいて baseUrl を設定する
 const isProduction = process.env.NODE_ENV === 'production';
@@ -114,84 +114,107 @@ app.get('/geocode', async (req, res) => {
 });
 
 // booksearch api
-app.get('/searchNDL', async (req, res) => {
-  const { query } = req.query;
+// app.get('/searchNDL', async (req, res) => {
+//   const { query } = req.query;
 
-  if (!query) {
-      return res.status(400).send('検索キーワードを入力してください');
+//   if (!query) {
+//       return res.status(400).send('検索キーワードを入力してください');
+//   }
+
+//   const encodedKeyword = encodeURIComponent(query);
+//   const apiUrl = `https://ndlsearch.ndl.go.jp/api/opensearch?any=${encodedKeyword}`;
+
+//   console.log(`Request URL: ${apiUrl}`); // ログにリクエストURLを表示
+
+//   try {
+//       const response = await fetch(apiUrl);
+//       const xmlText = await response.text();
+  
+//       const parser = new XMLParser({
+//           ignoreAttributes: false,
+//           attributeNamePrefix: "@_",
+//           ignoreNameSpace: true
+//       });
+//       const jsonData = parser.parse(xmlText);
+
+//       // レスポンスからrecordsを取得
+//       const records = jsonData?.searchRetrieveResponse?.records?.record || [];
+//       const books = Array.isArray(records) ? records : [records];
+
+//       // DOMParserを使用してrecordDataをパースする
+//       const jsdom = require("jsdom");
+//       const { JSDOM } = jsdom;
+
+//       const formattedBooks = books.map(book => {
+//         const recordDataXml = book?.recordData;
+    
+//         // DOMParserを使ってrecordDataをパース
+//         const dom = new JSDOM(recordDataXml);
+//         const document = dom.window.document;
+
+//         const title = document.querySelector("dc\\:title")?.textContent || '不明';
+//         const creator = document.querySelector("dc\\:creator")?.textContent || '不明';
+//         const publisher = document.querySelector("dc\\:publisher")?.textContent || '不明';
+    
+//         const subjects = [...document.querySelectorAll("dc\\:subject")].map(el => el.textContent) || [];
+//         const descriptions = [...document.querySelectorAll("dc\\:description")].map(el => el.textContent) || [];
+//         const language = document.querySelector("dc\\:language")?.textContent || '不明';
+    
+//         // ISBNを含むdc:identifierを取得するロジック
+//         const identifierElements = [...document.querySelectorAll("dc\\:identifier")];
+//         let isbn = null;
+//         identifierElements.forEach(el => {
+//             const identifierText = el.textContent;
+//             if (identifierText.startsWith('978')) { // ISBN-13形式であるかどうかを確認
+//                 isbn = identifierText.replace(/-/g, ''); // ハイフンを削除
+//             }
+//         });
+
+//         // ISBNの値をコンソールにログ出力
+//         console.log(`タイトル: ${title}, ISBN: ${isbn}`);
+
+//         return {
+//             title,
+//             creator,
+//             publisher,
+//             subject: subjects,
+//             description: descriptions,
+//             language,
+//             isbn // ISBNを追加して返す
+//         };
+//     });
+
+//         // クライアント側に書籍情報を返す
+//         res.json(formattedBooks);
+//     } catch (error) {
+//         console.error('APIリクエストエラー:', error);
+//         res.status(500).send('書籍データの取得に失敗しました');
+//     }
+// });
+
+
+// 楽天API用のエンドポイントを追加
+app.get('/searchBooks', async (req, res) => {
+  const { query } = req.query;
+  
+  if (!query || query.length < 3) {
+      return res.status(400).send('検索キーワードは3文字以上で入力してください');
   }
 
-  const encodedKeyword = encodeURIComponent(query);
-  const apiUrl = `https://ndlsearch.ndl.go.jp/api/opensearch?any=${encodedKeyword}`;
-
-  console.log(`Request URL: ${apiUrl}`); // ログにリクエストURLを表示
+  const apiUrl = `https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?format=json&keyword=${encodeURIComponent(query)}&applicationId=${RAKUTEN_APP_ID}&hits=10&genreId=001`;
 
   try {
       const response = await fetch(apiUrl);
-      const xmlText = await response.text();
-  
-      const parser = new XMLParser({
-          ignoreAttributes: false,
-          attributeNamePrefix: "@_",
-          ignoreNameSpace: true
-      });
-      const jsonData = parser.parse(xmlText);
-
-      // レスポンスからrecordsを取得
-      const records = jsonData?.searchRetrieveResponse?.records?.record || [];
-      const books = Array.isArray(records) ? records : [records];
-
-      // DOMParserを使用してrecordDataをパースする
-      const jsdom = require("jsdom");
-      const { JSDOM } = jsdom;
-
-      const formattedBooks = books.map(book => {
-        const recordDataXml = book?.recordData;
-    
-        // DOMParserを使ってrecordDataをパース
-        const dom = new JSDOM(recordDataXml);
-        const document = dom.window.document;
-
-        const title = document.querySelector("dc\\:title")?.textContent || '不明';
-        const creator = document.querySelector("dc\\:creator")?.textContent || '不明';
-        const publisher = document.querySelector("dc\\:publisher")?.textContent || '不明';
-    
-        const subjects = [...document.querySelectorAll("dc\\:subject")].map(el => el.textContent) || [];
-        const descriptions = [...document.querySelectorAll("dc\\:description")].map(el => el.textContent) || [];
-        const language = document.querySelector("dc\\:language")?.textContent || '不明';
-    
-        // ISBNを含むdc:identifierを取得するロジック
-        const identifierElements = [...document.querySelectorAll("dc\\:identifier")];
-        let isbn = null;
-        identifierElements.forEach(el => {
-            const identifierText = el.textContent;
-            if (identifierText.startsWith('978')) { // ISBN-13形式であるかどうかを確認
-                isbn = identifierText.replace(/-/g, ''); // ハイフンを削除
-            }
-        });
-
-        // ISBNの値をコンソールにログ出力
-        console.log(`タイトル: ${title}, ISBN: ${isbn}`);
-
-        return {
-            title,
-            creator,
-            publisher,
-            subject: subjects,
-            description: descriptions,
-            language,
-            isbn // ISBNを追加して返す
-        };
-    });
-
-        // クライアント側に書籍情報を返す
-        res.json(formattedBooks);
-    } catch (error) {
-        console.error('APIリクエストエラー:', error);
-        res.status(500).send('書籍データの取得に失敗しました');
-    }
+      if (!response.ok) {
+          throw new Error(`HTTPエラー! ステータスコード: ${response.status}`);
+      }
+      const data = await response.json();
+      res.json(data);
+  } catch (error) {
+      console.error('APIリクエストエラー:', error);
+      res.status(500).send('書籍データの取得に失敗しました');
+  }
 });
-
 
 // サーバーを起動
 const PORT = process.env.PORT || 8080;

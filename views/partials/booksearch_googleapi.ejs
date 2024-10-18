@@ -8,3 +8,17 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="<%= baseUrl %>scripts/booksearch_googleapi.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#search-form').on('submit', function(event) {
+            event.preventDefault(); // デフォルトのフォーム送信を防ぐ
+            const query = $('#search-input').val(); // 入力値を取得
+            if (query.length > 2) { // 3文字以上で検索を実行
+                searchBooks(query); // 検索関数を呼び出す
+            } else {
+                $('#results').html('<p>検索キーワードは3文字以上で入力してください。</p>');
+            }
+        });
+    });
+    </script>
