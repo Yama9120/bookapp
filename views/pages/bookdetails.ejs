@@ -27,12 +27,16 @@
                     <p>表紙画像がありません。</p>
                 <% } %>
             </div>
+            
+            <%- include('../partials/geocode-form'); %>
         </div>
+        
     
         <footer class="mt-4 w-100">
             <%- include('../partials/footer') %>
         </footer>
 
+        <script src="/scripts/geocode.js"></script>
         <!-- <script src="/scripts/searchlibrary.js"></script> -->
 
     </body>
