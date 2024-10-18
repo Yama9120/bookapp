@@ -8,6 +8,7 @@ const app = express();
 
 const API_KEY = process.env.API_KEY;
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const RAKUTEN_APP_ID = process.env.RAKUTEN_APP_ID;
 
 // 環境変数に基づいて baseUrl を設定する
 const isProduction = process.env.NODE_ENV === 'production';
@@ -108,6 +109,29 @@ app.get('/geocode', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// 楽天API用のエンドポイントを追加
+app.get('/searchBooks', async (req, res) => {
+  const { query } = req.query;
+  
+  if (!query || query.length < 3) {
+      return res.status(400).send('検索キーワードは3文字以上で入力してください');
+  }
+
+  const apiUrl = `https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?format=json&keyword=${encodeURIComponent(query)}&applicationId=${RAKUTEN_APP_ID}&hits=10`;
+
+  try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+          throw new Error(`HTTPエラー! ステータスコード: ${response.status}`);
+      }
+      const data = await response.json();
+      res.json(data);
+  } catch (error) {
+      console.error('APIリクエストエラー:', error);
+      res.status(500).send('書籍データの取得に失敗しました');
   }
 });
 

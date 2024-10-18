@@ -12,13 +12,6 @@ npm install
 
 http://localhost:8080/
 
-- vps
-
-git pull とかで更新後、実際に公開するときに、
-docker-composeのstageをlocalからproductionに変更
-httpsの自己証明証が取れていれば、警告が出なくなる
-
-
 
 # できたこと
 
@@ -39,3 +32,11 @@ httpsの自己証明証が取れていれば、警告が出なくなる
 - 何の機能が必要か固める
 - UIをどうするか
 - ログイン機能どうする（自分の周辺の図書館、お気に入り登録などができる）
+
+
+- vps
+git pull とかで更新後、実際に公開するときに、
+docker-composeのstageをlocalからproductionに変更
+httpsの自己証明証が取れていれば、警告が出なくなる
+
+- api等のクレジット記載
