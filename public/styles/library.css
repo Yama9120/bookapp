@@ -1,0 +1,18 @@
+/* 検索結果の表示スタイル */
+#book-search-results {
+    margin-top: 20px;
+}
+
+.library-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.library-result div {
+    flex: 1; /* 各要素が同じ幅を持つ */
+    text-align: center;
+}

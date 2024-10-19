@@ -91,7 +91,7 @@ app.get('/searchBook', async (req, res) => {
       return res.status(400).send('ISBNと図書館のsystemidを指定してください');
   }
 
-  // callback=noを追加してJSON形式で応答を取得
+  // 初回リクエスト
   const checkUrl = `https://api.calil.jp/check?appkey=${API_KEY}&isbn=${encodeURIComponent(isbn)}&systemid=${encodeURIComponent(systemid)}&format=json&callback=no`;
 
   try {
@@ -104,6 +104,14 @@ app.get('/searchBook', async (req, res) => {
       // デバック
       console.log('Received Book Data:', JSON.stringify(data, null, 2));
 
+      // 継続が必要な場合はポーリングを実施
+      if (data.continue === 1) {
+          // ポーリング処理
+          const session = data.session;
+          const pollResult = await pollCalilAPI(session);
+          return res.json(pollResult);
+      }
+
       res.json(data);
   } catch (error) {
       console.error('APIリクエストエラー:', error);
@@ -111,6 +119,29 @@ app.get('/searchBook', async (req, res) => {
   }
 });
 
+// 書籍状態確認API
+app.get('/checkBookStatus', async (req, res) => {
+  const { session } = req.query;
+
+  if (!session) {
+      return res.status(400).send('セッションIDを指定してください');
+  }
+
+  const checkUrl = `https://api.calil.jp/check?appkey=${API_KEY}&session=${session}&format=json&callback=no`;
+
+  try {
+      const response = await fetch(checkUrl);
+      if (!response.ok) {
+          throw new Error(`HTTPエラー! ステータスコード: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log('Checked Book Status Data:', JSON.stringify(data, null, 2));
+      res.json(data);
+  } catch (error) {
+      console.error('APIリクエストエラー:', error);
+      res.status(500).send('蔵書状態の取得に失敗しました');
+  }
+});
 
 // 経度緯度取得api
 app.get('/geocode', async (req, res) => {
