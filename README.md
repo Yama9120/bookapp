@@ -23,6 +23,7 @@ http://localhost:8080/
 - 本の結果を周辺図書館で表示
 
 # やること
+- APIリクエストエラー: ReferenceError: pollCalilAPI is not defined　これが画面遷移後一発目は必ず出るのでなんとかしたい
 
 - baseurlの残りを始末
 
