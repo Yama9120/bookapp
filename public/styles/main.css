@@ -43,3 +43,112 @@ footer {
     left: 0; /* 左側の位置を指定 */
     right: 0; /* 右側の位置を指定 */
 }
+
+.custom-container {
+    background-color: #f0f0f0; /* 薄いグレー */
+    padding: 20px; /* 内側の余白 */
+    margin-left: 30px; /* 左右の固定余白 */
+    margin-right: 30px;
+    border-radius: 50px; /* 角を少し丸める（オプション） */
+}
+  
+
+#results {
+    padding: 20px;
+}
+
+#results .row {
+    display: grid;
+    width: fit-content;
+    gap: 1.5rem; /*ここ消せばコンテナの隙間がなくなるのでボーダーつながる*/
+}
+
+/* レスポンシブグリッド */
+@media (min-width: 0) {
+    #results .row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 576px) {
+    #results .row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    #results .row {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 992px) {
+    #results .row {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+/* 区切り線を追加。各行の後ろに追加されます */
+#results .row > .col:nth-last-child(n) {
+    border-bottom: 7px solid #8d8d8d; /* 線の太さと色を調整可能 */
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(5px 5px 5px #aaa);
+}
+
+/* レスポンシブ対応の区切り線 */
+@media (max-width: 991px) {
+    #results .row > .col:nth-last-child(n) {
+        border-bottom: 7px solid #8d8d8d;
+        filter: drop-shadow(5px 5px 5px #aaa);
+    }
+}
+
+@media (max-width: 767px) {
+    #results .row > .col:nth-last-child(n) {
+        border-bottom: 7px solid #8d8d8d;
+        filter: drop-shadow(5px 5px 5px #aaa);
+    }
+}
+
+@media (max-width: 575px) {
+    #results .row > .col:nth-last-child(n) {
+        border-bottom: 7px solid #8d8d8d;
+        filter: drop-shadow(5px 5px 5px #aaa);
+    }
+}
+
+.book-card {
+    transition: transform 0.2s;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+    cursor: pointer;
+}
+
+.book-image-container {
+    aspect-ratio: 3/4; /* 本の表紙の一般的なアスペクト比 */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    filter: drop-shadow(5px 5px 5px #aaa);
+}
+
+.book-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 画像の縦横比を保持 */
+}
+
+.book-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.book-link:hover {
+    text-decoration: none;
+    color: inherit;
+}

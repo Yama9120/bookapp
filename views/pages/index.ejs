@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="<%= baseUrl %>styles/main.css">
         
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -17,18 +18,15 @@
         <%- include('../partials/head'); %>
     </head>
      
-    <body style="padding-top: 70px;">
+    <body style="padding-top: 50px;">
 
-        <div class="container"> 
+        <div class=".custum-container"> 
  
             <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
                 <%- include('../partials/header'); %>
             </header>
         
-            <main style="margin-top: 70px;">
-                <%- include('../partials/body'); %>
-
-                <%- include('../partials/line'); %>
+            <main style="margin-top: 50px;">
                 
                 <%- include('../partials/booksearch_googleapi'); %>     
 

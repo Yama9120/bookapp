@@ -252,7 +252,7 @@ app.get('/searchBooks', async (req, res) => {
       return res.status(400).send('検索キーワードは3文字以上で入力してください');
   }
 
-  const apiUrl = `https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?format=json&keyword=${encodeURIComponent(query)}&applicationId=${RAKUTEN_APP_ID}&hits=10`;
+  const apiUrl = `https://app.rakuten.co.jp/services/api/BooksTotal/Search/20170404?format=json&keyword=${encodeURIComponent(query)}&applicationId=${RAKUTEN_APP_ID}&hits=30`;
 
   try {
       const response = await fetch(apiUrl);

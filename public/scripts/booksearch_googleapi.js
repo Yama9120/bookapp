@@ -39,7 +39,7 @@ function searchBooks(query) {
         method: 'GET',
         success: function(data) {
             const booksWithISBN = data.Items.filter(book => book.Item.isbn); // ISBNが存在するもののみフィルタリング
-            displayResults(booksWithISBN.slice(0, 10)); // 最大10件まで表示
+            displayResults(booksWithISBN.slice(0, 30)); // 最大30件まで表示
         },
         error: function(jqXHR, errorThrown) {
             console.error('Error fetching books:', errorThrown);
@@ -52,36 +52,38 @@ function searchBooks(query) {
     });
 }
 
-// 検索結果を表示する関数
 function displayResults(books) {
     const resultsDiv = $('#results');
     resultsDiv.empty();
 
     if (books && books.length > 0) {
+        const rowDiv = $('<div class="row"></div>');
+        
         books.forEach(function(book) {
-            const Item = book.Item; // 楽天APIのレスポンス構造に合わせて修正
+            const Item = book.Item;
             const title = Item.title || 'タイトル不明';
-            const creator = Item.author || '著者不明';
-            const publisher = Item.publisherName || '出版社不明';
-            const thumbnailUrl = Item.largeImageUrl || ''; // 大きな画像URLを取得
-            const bookId = Item.isbn; // ISBNを本のIDとして使用
+            const thumbnailUrl = Item.largeImageUrl || '';
+            const bookId = Item.isbn;
 
             const bookHtml = `
-                <div class="book-item">
-                    <h2 class="book-title">${title}</h2>
-                    <p class="book-creator">著者: ${creator}</p>
-                    <p class="book-publisher">出版社: ${publisher}</p>
-                    ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="表紙画像" class="book-thumbnail">` : ''}
-                    <a href="/bookdetails/${bookId}" class="btn btn-primary mt-2">詳細を見る</a>
+                <div class="col">
+                    <div class="book-card">
+                        <a href="/bookdetails/${bookId}" class="book-link">
+                            <div class="book-image-container">
+                                ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="${title}" class="book-image">` : ''}
+                            </div>
+                        </a>
+                    </div>
                 </div>
             `;
-            resultsDiv.append(bookHtml);
+            rowDiv.append(bookHtml);
         });
+        
+        resultsDiv.append(rowDiv);
     } else {
         resultsDiv.html('<p>検索結果が見つかりませんでした。</p>');
     }
 }
-
 
 
 // function debounce(func, wait) {
