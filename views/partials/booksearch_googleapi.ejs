@@ -6,9 +6,18 @@
     border-radius: 5px;
     overflow: hidden;  /* 中身がはみ出るのを防ぐため */
     filter: drop-shadow(3px 3px 3px #aaa);
-    ">
+    display: flex;
+    justify-content: center;
+    align-items: center;
+">
 
-    <div class="container" style="display: flex; justify-content: center; align-items: center; flex-direction: column; min-height: 40vh;">
+    <div class="container" style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100%;
+    ">
         <h1 style="color:white; text-align: center;">図書館 & 蔵書検索</h1>
 
         <!-- 検索フォーム -->
@@ -24,6 +33,7 @@
         </form>
     </div>
 </div>
+
 
 
 <!-- 検索結果はコンテナの外に表示 -->

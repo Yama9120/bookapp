@@ -55,34 +55,47 @@ footer {
 
 #results {
     padding: 20px;
+    margin: 0 auto;
 }
 
 #results .row {
     display: grid;
-    width: fit-content;
-    gap: 1.5rem; /*ここ消せばコンテナの隙間がなくなるのでボーダーつながる*/
+    gap: 1.5rem;
+    justify-content: center; /* グリッド全体をセンタリング */
+    margin: 0 auto; /* センタリング用 */
+    max-width: 1400px; /* 必要に応じて調整 */
+}
+
+#results .col {
+    display: flex;
+    justify-content: center; /* 水平方向のセンタリング */
+    align-items: center; /* 垂直方向のセンタリング */
 }
 
 /* レスポンシブグリッド */
-@media (min-width: 0) {
-    #results .row {
-        grid-template-columns: repeat(2, 1fr);
-    }
+/* モバイルファースト: デフォルトで2列表示 */
+#results .row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem; /* モバイルでは隙間を少し狭く */
 }
 
-@media (min-width: 576px) {
+/* タブレット以上 */
+@media screen and (min-width: 768px) {
     #results .row {
         grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
     }
 }
 
-@media (min-width: 768px) {
+/* 小型デスクトップ以上 */
+@media screen and (min-width: 992px) {
     #results .row {
         grid-template-columns: repeat(4, 1fr);
     }
 }
 
-@media (min-width: 992px) {
+/* 大型デスクトップ */
+@media screen and (min-width: 1200px) {
     #results .row {
         grid-template-columns: repeat(5, 1fr);
     }
@@ -118,7 +131,10 @@ footer {
 }
 
 .book-card {
-    transition: transform 0.2s;
+    margin: 0 auto; /* カード自体もセンタリング */
+    width: 100%; /* カードの幅を100%に */
+    display: flex;
+    justify-content: center;
 }
 
 .book-card:hover {
@@ -133,6 +149,7 @@ footer {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    margin: 0 auto; /* コンテナもセンタリング */
     filter: drop-shadow(5px 5px 5px #aaa);
 }
 
