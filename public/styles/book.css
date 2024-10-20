@@ -1,0 +1,39 @@
+.book-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.book-title {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.book-creator, .book-publisher {
+    color: #666;
+    margin: 5px 0;
+}
+
+.subject-tag {
+    background-color: #f0f0f0;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-right: 5px;
+    font-size: 0.9em;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.book-descriptions {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.description {
+    color: #666;
+    margin: 5px 0;
+    font-size: 0.9em;
+}

@@ -1,9 +1,9 @@
-// デバウンス関数の実装
+// デバウンス関数の定義
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
         const later = () => {
-            clearTimeout(timeout);
+            timeout = null;
             func(...args);
         };
         clearTimeout(timeout);
@@ -11,48 +11,42 @@ function debounce(func, wait) {
     };
 }
 
-// 検索関数をデバウンスで包む
+// 検索クエリが3文字以上の場合に楽天APIを呼び出すデバウンスされた関数
 const debouncedSearch = debounce(function(query) {
-    if (query.length > 2) { // 最小3文字以上で検索
+    if (query.length > 2) {
         searchBooks(query);
     }
-}, 300); // 300ミリ秒のデバウンス時間
+}, 300);
 
-// 入力フィールドのイベントリスナーを設定
+// ドキュメントが準備できたら
 $(document).ready(function() {
-    $('#search-input').on('input', function() {
-        const query = $(this).val();
-        debouncedSearch(query);
-    });
-
-    $('#search-form').submit(function(e) {
-        e.preventDefault();
+    $('#search-button').on('click', function() {
         const query = $('#search-input').val();
         if (query.length > 2) {
             searchBooks(query);
+        } else {
+            $('#results').html('<p>検索キーワードは3文字以上で入力してください。</p>');
         }
     });
 });
 
+// 楽天APIを呼び出す関数
 function searchBooks(query) {
-    const apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=10`;
-    
     $('#results').html('<p>検索中...</p>');
 
     $.ajax({
-        url: apiUrl,
+        url: `/searchBooks?query=${encodeURIComponent(query)}`, // サーバーのエンドポイントを使用
         method: 'GET',
-        dataType: 'json',
         success: function(data) {
-            displayResults(data.items);
-            console.log(data.items);
+            const booksWithISBN = data.Items.filter(book => book.Item.isbn); // ISBNが存在するもののみフィルタリング
+            displayResults(booksWithISBN.slice(0, 30)); // 最大30件まで表示
         },
-        error: function(jqXHR, textStatus, errorThrown) {
+        error: function(jqXHR, errorThrown) {
             console.error('Error fetching books:', errorThrown);
             if (jqXHR.status === 429) {
                 $('#results').html('<p>リクエストが多すぎます。しばらく待ってから再試行してください。</p>');
             } else {
-                $('#results').html('<p>エラーが発生しました。もう一度お試しください。</p>');
+                $('#results').html('<p>書籍の取得中にエラーが発生しました。</p>');
             }
         }
     });
@@ -60,43 +54,136 @@ function searchBooks(query) {
 
 function displayResults(books) {
     const resultsDiv = $('#results');
-    resultsDiv.empty();  // 「検索中...」のメッセージをクリア
+    resultsDiv.empty();
 
     if (books && books.length > 0) {
+        const rowDiv = $('<div class="row"></div>');
+        
         books.forEach(function(book) {
-            const volumeInfo = book.volumeInfo;
-            const title = volumeInfo.title;
-            const authors = volumeInfo.authors ? volumeInfo.authors.join(', ') : '著者不明';
-            const thumbnail = volumeInfo.imageLinks ? volumeInfo.imageLinks.thumbnail : '';
+            const Item = book.Item;
+            const title = Item.title || 'タイトル不明';
+            const thumbnailUrl = Item.largeImageUrl || '';
+            const bookId = Item.isbn;
 
-            // 書籍のデータをURLエンコードして保存
-            const bookData = encodeURIComponent(JSON.stringify({ id: book.id, title, authors, thumbnail }));
-
-            // 詳細ページへのリンク追加
             const bookHtml = `
-                <div class="book-item">
-                    <a href="/book/${book.id}">
-                        ${thumbnail ? `<img src="${thumbnail}" alt="${title}の表紙">` : ''}
-                        <h2>${title}</h2>
-                        <p>著者: ${authors}</p>
-                    </a>
+                <div class="col">
+                    <div class="book-card">
+                        <a href="/bookdetails/${bookId}" class="book-link">
+                            <div class="book-image-container">
+                                ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="${title}" class="book-image">` : ''}
+                            </div>
+                        </a>
+                    </div>
                 </div>
             `;
-
-            resultsDiv.append(bookHtml);
+            rowDiv.append(bookHtml);
         });
+        
+        resultsDiv.append(rowDiv);
     } else {
         resultsDiv.html('<p>検索結果が見つかりませんでした。</p>');
     }
 }
 
-function saveBookData(bookData) {
-    // データをlocalStorageに保存
-    localStorage.setItem('selectedBook', bookData);
-    
-    // 保存されたデータをコンソールに表示して確認
-    console.log("保存されたデータ:", localStorage.getItem('selectedBook'));
-    
-    // データ保存後に手動で詳細ページに遷移
-    window.location.href = `/book?id=${JSON.parse(decodeURIComponent(bookData)).id}`;
-}
+
+// function debounce(func, wait) {
+//     let timeout;
+//     return function executedFunction(...args) {
+//         const later = () => {
+//             clearTimeout(timeout);
+//             func(...args);
+//         };
+//         clearTimeout(timeout);
+//         timeout = setTimeout(later, wait);
+//     };
+// }
+
+// const debouncedSearch = debounce(function(query) {
+//     if (query.length > 2) {
+//         searchBooks(query); // searchBooksを呼び出す
+//     }
+// }, 300);
+
+// $(document).ready(function() {
+//     $('#search-input').on('input', function() {
+//         const query = $(this).val();
+//         debouncedSearch(query); // 入力時にdebouncedSearchを呼び出す
+//     });
+
+//     $('#search-form').submit(function(e) {
+//         e.preventDefault();
+//         const query = $('#search-input').val();
+//         if (query.length > 2) {
+//             searchBooks(query); // フォーム送信時にもsearchBooksを呼び出す
+//         }
+//     });
+// });
+
+// function searchBooks(keyword) {
+//     const encodedKeyword = encodeURIComponent(keyword);
+//     const apiUrl = `https://ndlsearch.ndl.go.jp/api/opensearch?any=${encodedKeyword}`;
+
+//     fetch(apiUrl)
+//         .then(response => response.text())
+//         .then(data => {
+//             // XMLをDOMにパース
+//             const parser = new DOMParser();
+//             const xmlDoc = parser.parseFromString(data, "text/xml");
+//             const items = xmlDoc.getElementsByTagName("item");
+
+//             const books = Array.from(items).map(item => {
+//                 const title = item.getElementsByTagName("dc:title")[0]?.textContent || '不明';
+//                 const creator = item.getElementsByTagName("dc:creator")[0]?.textContent || '不明';
+//                 const publisher = item.getElementsByTagName("dc:publisher")[0]?.textContent || '不明';
+//                 let jpECode = '';
+//                 let isbn = '';
+
+//                 // JP-e コードとISBNを取得
+//                 const identifierElements = item.getElementsByTagName("dc:identifier");
+//                 for (let i = 0; i < identifierElements.length; i++) {
+//                     const identifierType = identifierElements[i].getAttribute("xsi:type");
+//                     if (identifierType === "dcndl:ISBN") {
+//                         isbn = identifierElements[i].textContent.replace(/-/g, ''); // ISBNからハイフンを削除
+//                     } else if (identifierType === "dcndl:JP-e") { // JP-e コードを優先して取得
+//                         jpECode = identifierElements[i].textContent;
+//                     }
+//                 }
+
+//                 return {
+//                     title,
+//                     creator,
+//                     publisher,
+//                     isbn,
+//                     jpECode // JP-e コードも返す
+//                 };
+//             });
+
+//             displayResults(books); // 検索結果を表示
+//         })
+//         .catch(error => console.error('Error fetching data:', error));
+// }
+
+// function displayResults(books) {
+//     const resultsDiv = $('#results');
+//     resultsDiv.empty();
+
+//     if (books && books.length > 0) {
+//         books.forEach(book => {
+//             const thumbnailUrl = book.isbn 
+//                 ? `https://ndlsearch.ndl.go.jp/thumbnail/${book.isbn}.jpg`
+//                 : ''; // ISBNがある場合はサムネイルURLを作成
+
+//             const bookHtml = `
+//                 <div class="book-item">
+//                     <h2 class="book-title">${book.title}</h2>
+//                     <p class="book-creator">著者: ${book.creator}</p>
+//                     <p class="book-publisher">出版社: ${book.publisher}</p>
+//                     ${thumbnailUrl ? `<img src="${thumbnailUrl}" alt="表紙画像" class="book-thumbnail">` : ''}
+//                 </div>
+//             `;
+//             resultsDiv.append(bookHtml);
+//         });
+//     } else {
+//         resultsDiv.html('<p>検索結果が見つかりませんでした。</p>');
+//     }
+// }

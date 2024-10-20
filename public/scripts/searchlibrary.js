@@ -1,75 +1,11 @@
-// 図書館のコードのようなもの
-let systemIds = [];
-let librariesData = [];
+let librariesData = []; // 図書館データを保存
 
-// 都道府県と市区町村のデータ
-let prefecturesData = {};
-
-const prefSelect = document.getElementById('pref');
-const citySelect = document.getElementById('city');
-
-// デフォルト値の設定
-const DEFAULT_PREFECTURE = "広島県";
-const DEFAULT_CITY = "東広島市";
-
-// // JSONファイルを読み込む
-// fetch('../pref_and_city.json')
-// .then(response => response.json())
-// .then(data => {
-//     prefecturesData = data;
-//     populatePrefectures();
-//     setDefaultValues();
-// })
-// .catch(error => console.error('Error loading the JSON file:', error));
-
-// 都道府県の選択
-function populatePrefectures() {
-    Object.keys(prefecturesData).forEach(pref => {
-        const option = document.createElement('option');
-        option.value = pref;
-        option.textContent = pref;
-        prefSelect.appendChild(option);
-    });
-}
-
-// 市区町村の選択
-function populateCities(prefecture) {
-    citySelect.innerHTML = '<option value="">市区町村を選択してください</option>';
-    
-    if (prefecture && prefecturesData[prefecture]) {
-        prefecturesData[prefecture].forEach(city => {
-            const option = document.createElement('option');
-            option.value = city;
-            option.textContent = city;
-            citySelect.appendChild(option);
-        });
-    }
-}
-
-// デフォルト値を選択
-function setDefaultValues() {
-    if (prefecturesData[DEFAULT_PREFECTURE]) {
-        prefSelect.value = DEFAULT_PREFECTURE;
-        populateCities(DEFAULT_PREFECTURE);
-        
-        if (prefecturesData[DEFAULT_PREFECTURE].includes(DEFAULT_CITY)) {
-            citySelect.value = DEFAULT_CITY;
-        }
-    }
-}
-
-// 都道府県選択時に市町村を更新
-prefSelect.addEventListener('change', function() {
-    const selectedPref = this.value;
-    populateCities(selectedPref);
-});
-
-
-// 図書館検索
-document.getElementById('library-search-form').addEventListener('submit', function(event) {
+// 図書館検索フォームの送信イベント
+document.getElementById('library-search-form').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    const url = `/searchLibrary?geocode=${encodeURIComponent(globalLongitude)},${encodeURIComponent(globalLatitude)}`;
+    const geocode = `${encodeURIComponent(globalLongitude)},${encodeURIComponent(globalLatitude)}`;
+    const url = `/searchLibrary?geocode=${geocode}`;
 
     fetch(url)
         .then(response => {
@@ -87,23 +23,21 @@ document.getElementById('library-search-form').addEventListener('submit', functi
         });
 });
 
-// 図書館データを表示する関数（蔵書検索を統合）
+// 図書館データを表示し、蔵書検索を開始する
 function displayLibraries(data) {
     const resultsDiv = document.getElementById('search-results');
     resultsDiv.innerHTML = ''; // 前の結果をクリア
     librariesData = data; // 図書館データを保存
 
     if (data && data.length > 0) {
-        // プルダウンを作成しないので、図書館データのみ保存
         console.log('図書館データを取得しました。');
     } else {
         resultsDiv.textContent = '該当する図書館が見つかりませんでした。';
     }
 }
 
-
-// 叢書検索（全ての取得した図書館で検索）
-document.getElementById('book-search-form').addEventListener('submit', function(event) {
+// 蔵書検索フォームの送信イベント
+document.getElementById('book-search-form').addEventListener('submit', function (event) {
     event.preventDefault();
 
     const isbn = document.getElementById('isbn').value;
@@ -122,8 +56,7 @@ document.getElementById('book-search-form').addEventListener('submit', function(
     });
 });
 
-
-// ISBNを使って蔵書を検索する関数（各図書館ごとに）
+// ISBNを使って蔵書を検索する関数
 function searchBook(isbn, systemid, selectedLibrary, session = null) {
     let url = `/searchBook?isbn=${encodeURIComponent(isbn)}&systemid=${encodeURIComponent(systemid)}`;
     if (session) {
@@ -156,38 +89,42 @@ function searchBook(isbn, systemid, selectedLibrary, session = null) {
         });
 }
 
-// 蔵書データを表示する関数（図書館名、貸し出し可否、予約リンクを表示）
+// 蔵書データを表示する関数
 function displayBookResults(data, selectedLibrary) {
     const resultsDiv = document.getElementById('book-search-results');
     
-    // 図書館ごとの蔵書結果表示領域
     const libraryDiv = document.createElement('div');
-    libraryDiv.innerHTML = `<h4>${selectedLibrary.formal}</h4>`;  // 図書館名
+    libraryDiv.classList.add('library-result'); // 新しいクラスを追加
 
+    const libraryNameDiv = document.createElement('div');
+    libraryNameDiv.textContent = selectedLibrary.formal; // 図書館名
+
+    const availabilityDiv = document.createElement('div');
     if (data.books && typeof data.books === 'object') {
         let foundMatchingLibrary = false;
 
         for (const isbn in data.books) {
             if (data.books.hasOwnProperty(isbn)) {
                 const bookInfo = data.books[isbn];
-                
+
                 for (const libraryName in bookInfo) {
                     if (bookInfo.hasOwnProperty(libraryName)) {
                         const statusInfo = bookInfo[libraryName];
                         const libraryStatuses = statusInfo.libkey || {};
-                        
-                        // 選択された図書館のlibkeyと一致するかチェック
-                        if (libraryStatuses.hasOwnProperty(selectedLibrary.libkey)) {
-                            const availability = libraryStatuses[selectedLibrary.libkey] === '貸出可' ? 'o' : 'x';
-                            libraryDiv.innerHTML += `<p>${isbn} - 貸し出し状況: ${availability}</p>`;
 
-                            // 予約リンクがあれば表示
+                        if (libraryStatuses.hasOwnProperty(selectedLibrary.libkey)) {
+                            const availability = libraryStatuses[selectedLibrary.libkey] === '貸出可' ? '貸出可' : '貸出不可';
+                            availabilityDiv.textContent = availability;
+
                             if (statusInfo.reserveurl && libraryStatuses[selectedLibrary.libkey] === '貸出可') {
+                                const reserveLinkDiv = document.createElement('div');
                                 const reserveLink = document.createElement('a');
                                 reserveLink.href = statusInfo.reserveurl;
-                                reserveLink.textContent = '予約';
-                                reserveLink.target = '_blank';
-                                libraryDiv.appendChild(reserveLink);
+                                reserveLink.textContent = '予約する';
+                                reserveLink.target = '_blank'; // 別タブで開く
+                                reserveLinkDiv.appendChild(reserveLink);
+
+                                libraryDiv.appendChild(reserveLinkDiv);
                             }
 
                             foundMatchingLibrary = true;
@@ -198,11 +135,14 @@ function displayBookResults(data, selectedLibrary) {
         }
 
         if (!foundMatchingLibrary) {
-            libraryDiv.innerHTML += '<p>該当する蔵書が見つかりませんでした。</p>';
+            availabilityDiv.textContent = '該当する蔵書が見つかりませんでした。';
         }
     } else {
-        libraryDiv.innerHTML += '<p>該当する蔵書が見つかりませんでした。</p>';
+        availabilityDiv.textContent = '該当する蔵書が見つかりませんでした。';
     }
 
-    resultsDiv.appendChild(libraryDiv); // 各図書館の結果を追加
+    libraryDiv.appendChild(libraryNameDiv);  // 図書館名
+    libraryDiv.appendChild(availabilityDiv); // 貸出状況
+
+    resultsDiv.appendChild(libraryDiv); // 結果を追加
 }
