@@ -7,9 +7,18 @@
 
     <h3>近隣図書館での蔵書検索</h3>
     <form id="geocode-form">
-        <input type="text" id="keyword-input" placeholder="地名を入力" required>
-        <button type="submit">検索</button>
-        <button type="button" id="location-button">現在地で検索</button>
+        <div class="input-group">
+            <input type="text" id="keyword-input" placeholder="地名を入力" class="form-control" style="width: 300px;">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-light">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="button" id="location-button">
+            <i class="fas fa-map-marker-alt"></i>
+        </button>          
     </form>
     <div id="geocode-result"></div>
 </div>

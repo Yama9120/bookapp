@@ -18,5 +18,21 @@
 }
 
 #location-button {
-    margin-left: 10px;
+    background-color: transparent;
+    border: 2px solid #00C300; /* 枠線を追加 */
+    border-radius: 8px;        /* 角を少し丸くする */
+    cursor: pointer;
+    font-size: 24px;           /* アイコンサイズを大きく */
+    color: #00C300;            /* アイコンと枠の色 */
+    width: 50px;               /* 正方形にするための幅 */
+    height: 50px;              /* 正方形にするための高さ */
+    display: flex;             /* アイコンを中央に配置 */
+    align-items: center;       /* 垂直方向に中央揃え */
+    justify-content: center;   /* 水平方向に中央揃え */
+    transition: color 0.3s, border-color 0.3s; /* 色のスムーズな変化 */
 }
+#location-button:hover {
+    color: #236e44;            /* ホバー時のアイコン色 */
+    border-color: #236e44;     /* ホバー時の枠線色 */
+}
+  
