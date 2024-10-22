@@ -3,33 +3,52 @@
     <head>
         <meta charset="UTF-8">
         <link rel="stylesheet" href="/styles/main.css">
+        <link rel="stylesheet" href="/styles/bookdetails.css">
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
         
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     </head>
      
-    <body style="padding-top: 70px;">
+    <body style="padding-top: 40px;">
         <div class="container"> 
             <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
                 <%- include('../partials/header') %>
             </header>
     
-            <div id="book-details", style="margin-top: 30px;">
-                <h1><%= bookTitle %></h1>
-                <p>著者: <%= author || '著者不明' %></p>
-                <p>出版社: <%= publisherName || '出版社不明' %></p>
-                <p><%= itemCaption || '説明なし' %></p>
-                <% if (largeImageUrl) { %>
-                    <img src="<%= largeImageUrl %>" alt="表紙画像">
-                <% } else { %>
-                    <p>表紙画像がありません。</p>
-                <% } %>
+            <div class="book-layout" style="margin-top: 30px;">
+                <div class="book-content">
+                    <!-- 背景画像用のコンテナ -->
+                    <% if (largeImageUrl) { %>
+                        <div class="background-image" style="background-image: url('<%= largeImageUrl %>');"></div>
+                    <% } %>
+                    <!-- オーバーレイ層 -->
+                    <div class="overlay"></div>
+
+                    <div class="content-wrapper">
+                        <div class="title-section">
+                            <div class="book-image">
+                                <% if (largeImageUrl) { %>
+                                    <img src="<%= largeImageUrl %>" alt="表紙画像">
+                                <% } else { %>
+                                    <div class="no-image">表紙画像がありません。</div>
+                                <% } %>
+                            </div>
+                            <div class="book-info">
+                                <h1><%= bookTitle %></h1>
+                                <p>著者: <%= author || '著者不明' %></p>
+                                <p>出版社: <%= publisherName || '出版社不明' %></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="description-section">
+                    <p><%= itemCaption || '説明なし' %></p>
+                </div>
             </div>
             
             <%- include('../partials/geocode-form'); %>
