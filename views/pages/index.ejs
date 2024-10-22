@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
 
         <link rel="stylesheet" href="/styles/main.css">
+        <link rel="stylesheet" href="/styles/bookdetails.css">
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
         
@@ -22,17 +23,13 @@
      
     <body style="padding-top: 50px;">
 
-        <div class=".custum-container"> 
+        <div class="container"> 
  
             <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
                 <%- include('../partials/header'); %>
             </header>
         
-            <main style="margin-top: 30px;">
-                
-                <%- include('../partials/booksearch_googleapi'); %>     
-
-            </main>  
+            <%- include('../partials/booksearch_googleapi'); %>     
     
         </div>
 

@@ -1,13 +1,13 @@
-<div class="bg-image" style="
+<div class="book-content" style="
     background: linear-gradient(to bottom, #2e8b57, #00C300);
     min-height: 30vh;
     height: 400px;
-    border-radius: 5px;
     overflow: hidden;  /* 中身がはみ出るのを防ぐため */
-    filter: drop-shadow(3px 3px 3px #aaa);
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 100vw;  /* 画面幅いっぱいに */
+    margin-left: calc(-50vw + 50%);  /* 横の余白を消す */
 ">
 
     <div class="container" style="
@@ -24,7 +24,7 @@
             <div class="input-group">
                 <input type="text" id="search-input" placeholder="探したい本のキーワードを入力" class="form-control" style="width: 300px;">
                 <div class="input-group-append">
-                    <button type="submit" class="btn btn-light">
+                    <button type="submit" class="btn custom-btn">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>

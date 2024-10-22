@@ -139,8 +139,23 @@
 #keyword-input {
     flex: 1;
     padding: 8px;
-    border: 1px solid #ddd;
+    border: 2px solid #ddd;
     border-radius: 3px;
+}
+
+/* 検索ボタンのスタイル */
+.custom-btn {
+    background-color: #dadada !important; /* 白背景 */
+    border: 10px solid #000000; /* 虫眼鏡マークと同じ暗めの色で囲む */
+    color: #393939; /* 虫眼鏡マークの色 */
+    padding: 8px 12px;
+    border-radius: 5px; /* 角を少し丸く */
+    transition: background-color 0.3s ease, color 0.3s ease; /* ホバー時のアニメーション */
+}
+
+.custom-btn:hover {
+    background-color: #b4b4b4 !important; /* ホバー時に暗めの背景色 */
+    color: #000000; /* ホバー時に虫眼鏡マークを白く */
 }
 
 button {
