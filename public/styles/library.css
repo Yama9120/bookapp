@@ -16,3 +16,7 @@
     flex: 1; /* 各要素が同じ幅を持つ */
     text-align: center;
 }
+
+#location-button {
+    margin-left: 10px;
+}

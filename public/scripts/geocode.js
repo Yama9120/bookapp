@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const isbn = path.split('/').pop();  // URLの最後の部分からISBNを取得
 
     if (form) {
+        // フォーム入力での検索
         form.addEventListener('submit', function(event) {
             event.preventDefault();
             const keyword = keywordInput.value;
@@ -20,7 +21,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayError('キーワードを入力してください。');
             }
         });
+
+        // 位置情報での検索
+        const locationButton = document.getElementById('location-button');
+        locationButton.addEventListener('click', function() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const geocode = `${position.coords.longitude},${position.coords.latitude}`;
+                        
+                        displayResult(geocode);
+                        searchLibraryAndBooks(geocode, isbn)
+                            .catch(displayError);
+                    },
+                    function(error) {
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                displayError('位置情報の使用が許可されていません。');
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                displayError('位置情報を取得できませんでした。');
+                                break;
+                            case error.TIMEOUT:
+                                displayError('位置情報の取得がタイムアウトしました。');
+                                break;
+                            default:
+                                displayError('位置情報の取得中にエラーが発生しました。');
+                                break;
+                        }
+                    }
+                );
+            } else {
+                displayError('お使いのブラウザは位置情報に対応していません。');
+            }
+        });
     }
+
+
 
     function getGeocode(keyword) {
         return fetch(`/geocode?keyword=${encodeURIComponent(keyword)}`)
