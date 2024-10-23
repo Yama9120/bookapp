@@ -112,15 +112,32 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!response.ok) {
             throw new Error('蔵書検索に失敗しました');
         }
+    
         const data = await response.json();
         console.log('蔵書検索結果:', data); // デバッグ用のログ出力
+    
+        // エラーチェック
+        if (data.error) {
+            console.error('エラー:', data.error);
+            return; // エラーがあれば処理を終了
+        }
     
         const session = data.session;
         if (session) {
             await pollForBookStatus(session, libraryDiv, libkey); // ポーリング処理
         } else {
-            console.log('初回結果:', data.books); // 初回結果を確認
-            updateBookStatus(data.books, libraryDiv, libkey); // 初回結果表示
+            // data.booksがundefinedまたは空の配列かをチェック
+            if (Array.isArray(data.books) && data.books.length > 0) {
+                console.log('初回結果:', data.books); // 初回結果を確認
+                updateBookStatus(data.books, libraryDiv, libkey); // 初回結果表示
+            } else {
+                console.warn('蔵書が見つかりませんでした。再検索します。');
+                // 一定時間待ってから再検索
+                setTimeout(() => {
+                    console.log('再検索を開始します...');
+                    searchBookInLibrary(systemid, libkey, isbn, libraryDiv); // 再検索
+                }, 500); // 500ミリ秒（0.5秒）待機
+            }
         }
     }
 
