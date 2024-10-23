@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/styles/main.css">
+        <link rel="stylesheet" href="/styles/bookdetails.css">
+        <link rel="stylesheet" href="/styles/library.css">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
+        <%- include('../partials/head') %>
+    </head>
+     
+    <body style="padding-top: 40px;">
+        <div class="container"> 
+            <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
+                <%- include('../partials/header') %>
+            </header>
+            
+            <div class="book-content" style="
+                background: linear-gradient(to bottom, #2e8b57, #00C300);
+                min-height: 30vh;
+                height: 400px;
+                overflow: hidden;  /* 中身がはみ出るのを防ぐため */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100vw;  /* 画面幅いっぱいに */
+                margin-left: calc(-50vw + 50%);  /* 横の余白を消す */
+            ">
+            
+                <div class="container" style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    height: 100%;
+                ">
+                    <h1 style="color:white; text-align: center;">このアプリについて</h1>
+                </div>
+              </div>
+            
+              <div class="description-section">
+                <h3>経緯</h3>
+                <br>
+                  <ol style="list-style-type: disc;">
+                    <li>読みたい本が図書館にあるか調べるとき、それぞれの図書館のサイトで調べるのが手間</li>
+                    <li>知らない本と出会いたい</li>
+                    <li>現在地から近くの図書館に目的の本があるか調べたい</li>
+                  </ol>
+                <br>
+                <p>　こういった様々な声を聞き、このアプリを作ろうと思いました。<br>
+                    　図書館や本屋に行く人たちは、近年減ってきていると感じています。
+                    ECサイトの普及により、本の購入も、目的の本の情報しか得られない状況であると思います。<br>
+                    　図書館や本屋に行くことのメリットは何なのか。
+                    改めて考えてみた時、それは目的の本以外も目に入ることだと考えました。
+                    このアプリではその考えを達成するために、まるで図書館や本屋のように、本の表紙のみが並ぶように作成しました。<br>
+                    　このアプリで、少しでも本に触れる機会が増える人がいれば良いな、と思っています。
+                </p>
+              </div>
+            </div>
+        </div>
+        
+    
+        <footer class="mt-4 w-100">
+            <%- include('../partials/footer') %>
+        </footer>
+
+    </body>
+    
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/styles/main.css">
+        <link rel="stylesheet" href="/styles/bookdetails.css">
+        <link rel="stylesheet" href="/styles/library.css">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        
+        <%- include('../partials/head') %>
+    </head>
+     
+    <body style="padding-top: 40px;">
+        <div class="container"> 
+            <header style="position: fixed; top: 0; left: 0; width: 100%; background-color: black; z-index: 1000;">
+                <%- include('../partials/header') %>
+            </header>
+            
+            <div class="book-content" style="
+                background: linear-gradient(to bottom, #2e8b57, #00C300);
+                min-height: 30vh;
+                height: 400px;
+                overflow: hidden;  /* 中身がはみ出るのを防ぐため */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100vw;  /* 画面幅いっぱいに */
+                margin-left: calc(-50vw + 50%);  /* 横の余白を消す */
+            ">
+            
+                <div class="container" style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    flex-direction: column;
+                    height: 100%;
+                ">
+                    <h1 style="color:white; text-align: center;">図書館 & 蔵書検索</h1>
+                    <h1 style="color:white; text-align: center;">使い方</h1>
+                </div>
+              </div>
+            
+              <div class="description-section">
+                <h3>使い方</h3>
+                <br>
+                <p>このアプリでは、以下の手順で図書館の蔵書を検索できます:</p>
+                <ol>
+                  <li>検索フォームにキーワード（書名や著者名など）を入力してください。</li>
+                  <li>表示された本の表紙をクリックします。</li>
+                  <li>クリックした本の詳細ページが表示されます。</li>
+                  <li>図書館の蔵書が検索したい場合、地域や図書館を指定して検索ボタンをクリック or 緑色のピンがアイコンの現在地から検索ボタンをクリックします。</li>
+                  <li>蔵書がある本に関しては、必要に応じて予約リンクをクリックします。</li>
+                </ol>
+                <br>
+                <p>このアプリは図書館APIを活用して、最新の蔵書情報を取得しています。</p>
+              </div>
+            </div>
+        </div>
+        
+    
+        <footer class="mt-4 w-100">
+            <%- include('../partials/footer') %>
+        </footer>
+
+    </body>
+    
+</html>

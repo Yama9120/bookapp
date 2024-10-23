@@ -27,6 +27,15 @@ app.get('/', (req, res) => {
   res.render('pages/index', { baseUrl });
 });
 
+// aboutページ用のルート
+app.get('/about', (req, res) => {
+  res.render('pages/about');  // readme.ejsをレンダリング
+});
+
+// how to useページ用のルート
+app.get('/howtouse', (req, res) => {
+  res.render('pages/howtouse');  // readme.ejsをレンダリング
+});
 
 // 本の詳細ページルート
 app.get('/bookdetails/:isbn', async (req, res) => {
