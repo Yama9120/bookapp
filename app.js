@@ -37,6 +37,26 @@ app.get('/howtouse', (req, res) => {
   res.render('pages/howtouse');  // readme.ejsをレンダリング
 });
 
+// // マップに図書館表示用
+// const helmet = require('helmet');
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       useDefaults: true,
+//       directives: {
+//         "script-src": ["'self'", "https://maps.googleapis.com", "'unsafe-inline'"],
+//         // その他のリソースに関する設定
+//       },
+//     },
+//   })
+// );
+
+// app.get('/bookdetails', (req, res) => {
+//   res.render('pages/bookdetails', {
+//       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY
+//   });
+// });
+
 // 本の詳細ページルート
 app.get('/bookdetails/:isbn', async (req, res) => {
   const isbn = req.params.isbn;

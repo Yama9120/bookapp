@@ -65,7 +65,7 @@
 .book-image {
     flex: 0 0 200px;
     border: 1px solid #ddd;
-    filter: drop-shadow(5px 5px 5px #202020); /* 影を追加 */
+    /* filter: drop-shadow(5px 5px 5px #202020); 影を追加 */
 }
 
 .book-image img {

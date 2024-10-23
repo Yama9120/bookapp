@@ -17,6 +17,7 @@
     "ejs": "^3.1.10",
     "express": "^4.21.0",
     "fast-xml-parser": "^4.5.0",
+    "helmet": "^8.0.0",
     "jsdom": "^16.7.0",
     "node-fetch": "^3.3.2",
     "undici": "^6.19.8"
