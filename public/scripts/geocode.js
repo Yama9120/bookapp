@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('geocode-form');
     const keywordInput = document.getElementById('keyword-input');
     const resultDiv = document.getElementById('geocode-result');
+    const retryButtons = {}; // エラーがあった図書館に対応するボタンを格納するオブジェクト
 
     const path = window.location.pathname;
     const isbn = path.split('/').pop();  // URLの最後の部分からISBNを取得
@@ -35,20 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             .catch(displayError);
                     },
                     function(error) {
-                        switch(error.code) {
-                            case error.PERMISSION_DENIED:
-                                displayError('位置情報の使用が許可されていません。');
-                                break;
-                            case error.POSITION_UNAVAILABLE:
-                                displayError('位置情報を取得できませんでした。');
-                                break;
-                            case error.TIMEOUT:
-                                displayError('位置情報の取得がタイムアウトしました。');
-                                break;
-                            default:
-                                displayError('位置情報の取得中にエラーが発生しました。');
-                                break;
-                        }
+                        handleGeolocationError(error);
                     }
                 );
             } else {
@@ -56,8 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
-
 
     function getGeocode(keyword) {
         return fetch(`/geocode?keyword=${encodeURIComponent(keyword)}`)
@@ -68,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                console.log('APIからのレスポンス:', data);
                 if (data.error) {
                     throw new Error(data.error);
                 }
@@ -91,11 +76,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                console.log('Library Search Results:', data);
+                console.log('取得した図書館データ:', data);
                 displayLibraryResults(data, isbn);
             })
             .catch(error => {
-                console.error('Library search failed:', error);
                 displayError('図書館データの取得に失敗しました');
             });
     }
@@ -107,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         libraries.forEach(library => {
             const libraryDiv = document.createElement('div');
+            libraryDiv.className = 'library-block';
             libraryDiv.innerHTML = `
                 <p>${library.formal}</p>
                 <p>蔵書検索中...</p>  <!-- 蔵書検索結果の場所を確保 -->
@@ -140,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Book search failed:', error);
                 libraryDiv.innerHTML += '<p class="error">もう一度検索を押してください</p>';
+                // createRetryButton(libraryDiv, systemid, isbn); // エラーが出た図書館に再検索ボタンを作成
             });
     }    
 
@@ -154,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Polling result:', data);
                     // ポーリングを続けるか確認
                     if (data.continue === 1) {
                         // 現在の結果を表示してポーリングを継続
@@ -168,6 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error => {
                     console.error('Polling failed:', error);
                     libraryDiv.innerHTML += '<p class="error">蔵書情報の取得に失敗しました</p>';
+                    createRetryButton(libraryDiv, systemid, isbn); // エラーが出た図書館に再検索ボタンを作成
                 });
         }, 2000);  // 2秒間隔を開けてポーリング
     }
@@ -191,7 +177,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     // libkey が空の場合のメッセージ
                     libraryDiv.innerHTML += `<p>蔵書なし</p>`;
-                    console.warn(`ISBN ${isbn} の図書館の状態が取得できませんでした`);  // 警告出力
                 }
 
                 // 予約リンクがある場合に表示
@@ -202,7 +187,62 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // 再検索ボタンを作成
+    function createRetryButton(libraryDiv, systemid, isbn) {
+        if (!retryButtons[systemid]) { // ボタンが未作成の場合のみ作成
+            const retryButton = document.createElement('button');
+            retryButton.textContent = '再検索';
+            retryButton.addEventListener('click', function() {
+                retrySearch(systemid, isbn, libraryDiv);
+            });
+            libraryDiv.appendChild(retryButton);
+            retryButtons[systemid] = retryButton; // ボタンを格納
+        }
+    }
+
+    // 再検索処理
+    // function retrySearch(systemid, isbn, libraryDiv) {
+    //     // 再検索ボタンを非表示にする
+    //     const retryButton = retryButtons[systemid];
+    //     if (retryButton) {
+    //         retryButton.style.display = 'none'; // ボタンを非表示
+    //     }
+    
+    //     // エラーメッセージを消去
+    //     const errorMessage = libraryDiv.querySelector('.error');
+    //     if (errorMessage) {
+    //         errorMessage.remove();
+    //     }
+    
+    //     fetch(`/searchBook?systemid=${systemid}&isbn=${isbn}`)
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 throw new Error('蔵書検索に失敗しました');
+    //             }
+    //             return response.json();
+    //         })
+    //         .then(data => {
+    //             const session = data.session;  // セッションIDを取得
+    //             if (session) {
+    //                 // ポーリングを開始
+    //                 pollForBookStatus(session, libraryDiv);
+    //             } else {
+    //                 updateBookStatus(data.books, libraryDiv);  // 初回結果表示
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error('Book search retry failed:', error);
+    //             libraryDiv.innerHTML += '<p class="error">もう一度検索を押してください</p>';
+    //             createRetryButton(libraryDiv, systemid, isbn); // エラーが出た図書館に再検索ボタンを作成
+    //         });
+    // }
+
     function displayError(message) {
         resultDiv.innerHTML = `<p class="error">${message}</p>`;
+    }
+
+    function handleGeolocationError(error) {
+        console.error('Geolocation error:', error);
+        displayError('位置情報の取得に失敗しました。');
     }
 });

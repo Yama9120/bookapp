@@ -36,3 +36,11 @@
     border-color: #236e44;     /* ホバー時の枠線色 */
 }
   
+.library-block {
+    border: 1px solid #ccc; /* 枠線の色 */
+    border-radius: 8px; /* 角を丸くする */
+    padding: 16px; /* 内側の余白 */
+    margin: 10px 0; /* 上下の外側の余白 */
+    background-color: #f9f9f9; /* 背景色 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 影を追加 */
+}
