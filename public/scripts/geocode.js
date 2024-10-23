@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(data => {
                 console.log('取得した図書館データ:', data);
-                displayLibraryResults(data, isbn);
+                displayLibraryResults(data, isbn);  // ここで取得した図書館データを次に渡す
             })
             .catch(error => {
                 displayError('図書館データの取得に失敗しました');
@@ -87,8 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayLibraryResults(libraries, isbn) {
         resultDiv.innerHTML = '';  // 結果をクリア
         const libraryResultDiv = document.createElement('div');
-        // libraryResultDiv.innerHTML = `<h3>近くの図書館</h3>`;
-
+    
         libraries.forEach(library => {
             const libraryDiv = document.createElement('div');
             libraryDiv.className = 'library-block';
@@ -97,15 +96,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>蔵書検索中...</p>  <!-- 蔵書検索結果の場所を確保 -->
             `;
             libraryResultDiv.appendChild(libraryDiv);
-
-            // 各図書館での蔵書検索を行う
-            searchBookInLibrary(library.systemid, isbn, libraryDiv);
+    
+            // 各図書館のlibkeyを使って蔵書検索
+            searchBookInLibrary(library.systemid, library.libkey, isbn, libraryDiv);
         });
-
+    
         resultDiv.appendChild(libraryResultDiv);
     }
 
-    function searchBookInLibrary(systemid, isbn, libraryDiv) {
+    function searchBookInLibrary(systemid, libkey, isbn, libraryDiv) {
         fetch(`/searchBook?systemid=${systemid}&isbn=${isbn}`)
             .then(response => {
                 if (!response.ok) {
@@ -114,23 +113,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
+                console.log('蔵書検索結果:', data);  // デバッグ用のログ出力
                 const session = data.session;  // セッションIDを取得
                 if (session) {
                     // ポーリングを開始
-                    pollForBookStatus(session, libraryDiv);
+                    pollForBookStatus(session, libraryDiv, libkey);
                 } else {
-                    updateBookStatus(data.books, libraryDiv);  // 初回結果表示
+                    console.log('初回結果:', data.books);  // 初回結果を確認
+                    updateBookStatus(data.books, libraryDiv, libkey);  // 初回結果表示
                 }
             })
             .catch(error => {
                 console.error('Book search failed:', error);
                 libraryDiv.innerHTML += '<p class="error">もう一度検索を押してください</p>';
-                // createRetryButton(libraryDiv, systemid, isbn); // エラーが出た図書館に再検索ボタンを作成
             });
     }    
 
     // ポーリング処理
-    function pollForBookStatus(session, libraryDiv) {
+    function pollForBookStatus(session, libraryDiv, libkey) {
         setTimeout(() => {
             fetch(`/checkBookStatus?session=${session}&format=json`)
                 .then(response => {
@@ -140,67 +140,63 @@ document.addEventListener('DOMContentLoaded', function() {
                     return response.json();
                 })
                 .then(data => {
-                    // ポーリングを続けるか確認
+                    console.log('ポーリング結果:', data);  // ポーリング結果を確認
                     if (data.continue === 1) {
-                        // 現在の結果を表示してポーリングを継続
-                        updateBookStatus(data.books, libraryDiv);
-                        pollForBookStatus(session, libraryDiv);  // 2秒以上の間隔でポーリング
+                        updateBookStatus(data.books, libraryDiv, libkey);
+                        pollForBookStatus(session, libraryDiv, libkey);  // 2秒以上の間隔でポーリング
                     } else {
-                        // 最終結果を表示
-                        updateBookStatus(data.books, libraryDiv);
+                        updateBookStatus(data.books, libraryDiv, libkey);  // 最終結果を表示
                     }
                 })
                 .catch(error => {
                     console.error('Polling failed:', error);
                     libraryDiv.innerHTML += '<p class="error">蔵書情報の取得に失敗しました</p>';
-                    createRetryButton(libraryDiv, systemid, isbn); // エラーが出た図書館に再検索ボタンを作成
                 });
         }, 2000);  // 2秒間隔を開けてポーリング
     }
+    
 
     // 蔵書ステータスの更新
-    function updateBookStatus(books, libraryDiv) {
+    function updateBookStatus(books, libraryDiv, targetLibkey) {
         libraryDiv.querySelector('p:last-child').remove();  // "蔵書検索中..." を削除
-
+        
         Object.entries(books).forEach(([isbn, libraryData]) => {
-            // 各 systemid に基づいて図書館データを取得
             Object.entries(libraryData).forEach(([systemid, data]) => {
                 const libStatus = data.libkey || {};  // libkey を取得
                 const reserveUrl = data.reserveurl;  // 予約URLを取得
-
-                // 図書館の蔵書状況を表示
-                if (Object.keys(libStatus).length > 0) {  // libStatus が空でないか確認
-                    for (const [libraryName, status] of Object.entries(libStatus)) {
-                        const bookStatus = `${libraryName}: ${status}`;
-                        libraryDiv.innerHTML += `<p>${bookStatus}</p>`;
+                
+                // 図書館のlibkeyをフィルタリング
+                if (libStatus[targetLibkey]) {  // targetLibkeyで一致する図書館があるか確認
+                    const status = libStatus[targetLibkey];  // 図書館名ではなくtargetLibkeyに一致する蔵書情報を取得
+                    const bookStatus = `${targetLibkey}: ${status}`;
+                    libraryDiv.innerHTML += `<p>${bookStatus}</p>`;
+    
+                    // 予約リンクがある場合に表示
+                    if (reserveUrl) {
+                        libraryDiv.innerHTML += `<p><a href="${reserveUrl}" target="_blank">予約</a></p>`;
                     }
                 } else {
-                    // libkey が空の場合のメッセージ
                     libraryDiv.innerHTML += `<p>蔵書なし</p>`;
-                }
-
-                // 予約リンクがある場合に表示
-                if (reserveUrl) {
-                    libraryDiv.innerHTML += `<p><a href="${reserveUrl}" target="_blank">予約</a></p>`;
                 }
             });
         });
-    }
+    }    
 
-    // 再検索ボタンを作成
-    function createRetryButton(libraryDiv, systemid, isbn) {
-        if (!retryButtons[systemid]) { // ボタンが未作成の場合のみ作成
-            const retryButton = document.createElement('button');
-            retryButton.textContent = '再検索';
-            retryButton.addEventListener('click', function() {
-                retrySearch(systemid, isbn, libraryDiv);
-            });
-            libraryDiv.appendChild(retryButton);
-            retryButtons[systemid] = retryButton; // ボタンを格納
-        }
-    }
 
-    // 再検索処理
+    // //再検索ボタンを作成
+    // function createRetryButton(libraryDiv, systemid, isbn) {
+    //     if (!retryButtons[systemid]) { // ボタンが未作成の場合のみ作成
+    //         const retryButton = document.createElement('button');
+    //         retryButton.textContent = '再検索';
+    //         retryButton.addEventListener('click', function() {
+    //             retrySearch(systemid, isbn, libraryDiv);
+    //         });
+    //         libraryDiv.appendChild(retryButton);
+    //         retryButtons[systemid] = retryButton; // ボタンを格納
+    //     }
+    // }
+
+    // //再検索処理
     // function retrySearch(systemid, isbn, libraryDiv) {
     //     // 再検索ボタンを非表示にする
     //     const retryButton = retryButtons[systemid];
