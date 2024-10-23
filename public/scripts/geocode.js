@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayLibraryResults(libraries, isbn) {
         resultDiv.innerHTML = '';  // 結果をクリア
         const libraryResultDiv = document.createElement('div');
-        libraryResultDiv.innerHTML = `<h3>近くの図書館</h3>`;
+        // libraryResultDiv.innerHTML = `<h3>近くの図書館</h3>`;
 
         libraries.forEach(library => {
             const libraryDiv = document.createElement('div');
