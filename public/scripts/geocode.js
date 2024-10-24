@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('geocode-form');
     const keywordInput = document.getElementById('keyword-input');
     const resultDiv = document.getElementById('geocode-result');
-    const retryButtons = {}; // エラーがあった図書館に対応するボタンを格納するオブジェクト
 
     const path = window.location.pathname;
     const isbn = path.split('/').pop();  // URLの最後の部分からISBNを取得
@@ -230,57 +229,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-
-
-    // //再検索ボタンを作成
-    // function createRetryButton(libraryDiv, systemid, isbn) {
-    //     if (!retryButtons[systemid]) { // ボタンが未作成の場合のみ作成
-    //         const retryButton = document.createElement('button');
-    //         retryButton.textContent = '再検索';
-    //         retryButton.addEventListener('click', function() {
-    //             retrySearch(systemid, isbn, libraryDiv);
-    //         });
-    //         libraryDiv.appendChild(retryButton);
-    //         retryButtons[systemid] = retryButton; // ボタンを格納
-    //     }
-    // }
-
-    // //再検索処理
-    // function retrySearch(systemid, isbn, libraryDiv) {
-    //     // 再検索ボタンを非表示にする
-    //     const retryButton = retryButtons[systemid];
-    //     if (retryButton) {
-    //         retryButton.style.display = 'none'; // ボタンを非表示
-    //     }
-    
-    //     // エラーメッセージを消去
-    //     const errorMessage = libraryDiv.querySelector('.error');
-    //     if (errorMessage) {
-    //         errorMessage.remove();
-    //     }
-    
-    //     fetch(`/searchBook?systemid=${systemid}&isbn=${isbn}`)
-    //         .then(response => {
-    //             if (!response.ok) {
-    //                 throw new Error('蔵書検索に失敗しました');
-    //             }
-    //             return response.json();
-    //         })
-    //         .then(data => {
-    //             const session = data.session;  // セッションIDを取得
-    //             if (session) {
-    //                 // ポーリングを開始
-    //                 pollForBookStatus(session, libraryDiv);
-    //             } else {
-    //                 updateBookStatus(data.books, libraryDiv);  // 初回結果表示
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error('Book search retry failed:', error);
-    //             libraryDiv.innerHTML += '<p class="error">もう一度検索を押してください</p>';
-    //             createRetryButton(libraryDiv, systemid, isbn); // エラーが出た図書館に再検索ボタンを作成
-    //         });
-    // }
 
     function displayError(message) {
         resultDiv.innerHTML = `<p class="error">${message}</p>`;
