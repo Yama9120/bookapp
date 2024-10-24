@@ -44,3 +44,37 @@
     background-color: #f9f9f9; /* 背景色 */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 影を追加 */
 }
+
+.library-status {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.library-status p {
+    margin: 0;
+}
+
+.library-status.available {
+    background-color: #e0f9e0; /* 緑色の背景 */
+    color: green;
+}
+
+.library-status.unavailable {
+    background-color: #fff5e1; /* 黄色の背景 */
+    color: orange;
+}
+
+.library-status.none {
+    background-color: #ffe5e5; /* 赤色の背景 */
+    color: red;
+}
+
+/* .library-status a {
+    color: blue;
+    text-decoration: underline;
+} */

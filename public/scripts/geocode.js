@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const libraryDiv = document.createElement('div');
             libraryDiv.className = 'library-block';
             libraryDiv.innerHTML = `
-                <p>${library.formal}</p>
+                <p>${library.formal}　${parseFloat(library.distance).toFixed(1)}km先</p>
                 <p>蔵書検索中...</p>  <!-- 蔵書検索結果の場所を確保 -->
             `;
             libraryResultDiv.appendChild(libraryDiv);
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 蔵書ステータスの更新
     function updateBookStatus(books, libraryDiv, targetLibkey) {
         libraryDiv.querySelector('p:last-child').remove();  // "蔵書検索中..." を削除
-        
+
         // booksがnullまたはundefinedの場合にエラーメッセージを表示
         if (!books || Object.keys(books).length === 0) {
             libraryDiv.innerHTML += `<p class="error">蔵書データがありません</p>`;
@@ -186,15 +186,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 図書館のlibkeyをフィルタリング
                 if (libStatus[targetLibkey]) {  // targetLibkeyで一致する図書館があるか確認
                     const status = libStatus[targetLibkey];  // 図書館名ではなくtargetLibkeyに一致する蔵書情報を取得
-                    const bookStatus = `${targetLibkey}: ${status}`;
-                    libraryDiv.innerHTML += `<p>${bookStatus}</p>`;
+
+                    // 貸出状況に応じたアイコンとメッセージの表示
+                    let statusMessage = '';
+                    let statusIcon = '';
+
+                    if (status === '貸出可') {
+                        statusMessage = '貸出可';
+                        statusIcon = '✔️';
+                        libraryDiv.innerHTML += `
+                            <div class="library-status available">
+                                <p>${statusMessage} ${statusIcon}</p>
+                                ${reserveUrl ? `<p><a href="${reserveUrl}" target="_blank">予約</a></p>` : ''}
+                            </div>`;
+                    } else if (status === '貸出中') {
+                        statusMessage = '貸出中';
+                        statusIcon = '⏳';
+                        libraryDiv.innerHTML += `
+                            <div class="library-status unavailable">
+                                <p>${statusMessage} ${statusIcon}</p>
+                                ${reserveUrl ? `<p><a href="${reserveUrl}" target="_blank">予約</a></p>` : ''}
+                            </div>`;
+                    } else {
+                        statusMessage = '蔵書なし';
+                        statusIcon = '❌';
+                        libraryDiv.innerHTML += `
+                            <div class="library-status none">
+                                <p>${statusMessage} ${statusIcon}</p>
+                            </div>`;
+                    }
 
                     // 予約リンクがある場合に表示
-                    if (reserveUrl) {
-                        libraryDiv.innerHTML += `<p><a href="${reserveUrl}" target="_blank">予約</a></p>`;
-                    }
+                    // if (reserveUrl && status !== '蔵書なし') {
+                    //     libraryDiv.innerHTML += `<p><a href="${reserveUrl}" target="_blank">予約</a></p>`;
+                    // }
                 } else {
-                    libraryDiv.innerHTML += `<p>蔵書なし</p>`;
+                    // 蔵書なしの場合
+                    libraryDiv.innerHTML += `
+                        <div class="library-status none">    
+                            <p>蔵書なし ❌</p>
+                        </div>`;
                 }
             });
         });
